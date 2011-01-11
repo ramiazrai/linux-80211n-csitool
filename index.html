@@ -18,6 +18,29 @@ Server Edition. You can obtain it from the Ubuntu website, <a href="http://relea
 <p>You are of course free to use any flavor/version of Linux that you choose, but if you have issues, this is the only version of Linux we will support.</p>
 
 <!--- ********************************************************************* -->
+<H4>1a. (Optional) Configure Ubuntu for Kernel Development</H4>
+
+<p>If you are scripting commands you can either <tt>setuid</tt> them or you can just disable password checks for <tt>sudo</tt>.  I prefer the latter, it comes in handy more and requires less manual effort.  But, install your security patches.</p>
+<pre>
+sudo visudo
+# change
+# %admin ALL=(ALL) ALL
+# to
+# %admin ALL=NOPASSWD: ALL
+</pre>
+
+<p>If you are planning on modifying the driver and other parts of the wireless network stack, you'll want to make sure the modules aren't autoloaded.  This way, when you crash the machine, it'll stay up when it reboots!</p>
+<pre>
+sudo vim /etc/modprobe.d/blacklist.conf
+# Add this:
+	# blacklist modules under active development
+	blacklist iwlagn
+	blacklist iwlcore
+	blacklist mac80211
+	blacklist cfg80211
+</pre>
+
+<!--- ********************************************************************* -->
 <H4>2. Install necessary packages on Ubuntu</H4>
 
 <p>These are for ensuring you can compile and install our modified Linux kernel.</p>
@@ -33,7 +56,7 @@ sudo apt-get -y install libnl-dev libssl-dev	# Install some necessary libraries
 <p><tt>iw</tt> is the new <tt>iwconfig</tt>. You need it to do things like enable monitor mode and 40 MHz channels from the command line.</p>
 
 <pre>
-sudo apt-get install iw
+sudo apt-get -y install iw
 </pre>
 
 <!--- ********************************************************************* -->
@@ -81,6 +104,8 @@ sudo mkdir /usr/src/linux-headers-`cat include/config/kernel.release` \
 	&& sudo cp -rf usr/include
 	/usr/src/linux-headers-`cat include/config/kernel.release`/include
 </pre>
+
+<p>Finally, <b>reboot</b> into your new kernel.  If you have issues booting, boot back into the previous kernel and then look into your kernel config.</p>
 
 <!--- ********************************************************************* -->
 <H4>4. Download and install our custom firmware.</H4>
