@@ -20,7 +20,7 @@
 <H4>1. Install Ubuntu Linux</H4>
 
 <p>Our testbed runs 32-bit (a.k.a. x86) Ubuntu Linux, version 10.04LTS of the
-Server Edition. You can obtain it from the Ubuntu website, <a href="http://releases.ubuntu.com/lucid/">here</a>. [<a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.1-server-i386.iso">Direct ISO download</a>]</p>
+Server Edition. You can obtain it from the Ubuntu website, <a href="http://releases.ubuntu.com/lucid/">here</a>. [Direct link to: <a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.1-server-i386.iso">ISO</a> | <a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.1-server-i386.iso.torrent">Torrent</a>]</p>
 <p>You are of course free to use any flavor/version of Linux that you choose, but if you have issues, this is the only version of Linux we will support.</p>
 
 <!--- ********************************************************************* -->
@@ -70,10 +70,10 @@ sudo apt-get -y install iw
 
 <p>We have moved the hosting of our custom kernel to <a href="http://www.github.com">GitHub</a>.  This is a surprisingly great, easy-to-use site.</p>
 
-<p>First, we fetch the code.</p>
+<p>First, we fetch the code. We also fetch supplemental files such as custom firmware, userspace tools, and MATLAB scripts.</p>
 <pre>
 git clone git://github.com/dhalperi/linux-80211n-csitool.git
-cd linux-80211n-csitool
+git clone git://github.com/dhalperi/linux-80211n-csitool-supplementary.git
 </pre>
 
 <p>Next, we configure the kernel. We offer two options for how this can be done. V1: This version uses our optimized kernel config. It compiles very fast and
@@ -81,6 +81,7 @@ has a lot of Linux cruft removed, but it may take a few tries to get it working
 for all the hardware on your system.</p>
 
 <pre>
+cd linux-80211n-csitool			# Go into the kernel src directory
 make oldconfig				# Use our optimized kernel config
 make menuconfig				# Enable your system-specific hardware
 </pre>
@@ -114,9 +115,9 @@ sudo mkdir /usr/src/linux-headers-`cat include/config/kernel.release` \
 <p>Finally, <b>reboot</b> into your new kernel.  If you have issues booting, boot back into the previous kernel and then look into your kernel config.</p>
 
 <!--- ********************************************************************* -->
-<H4>4. Download and install our custom firmware.</H4>
+<H4>4. Install our custom firmware.</H4>
 
-<p>Fetch the firmware from the <a href="http://ils.intel-research.net/projects/80211n-channel-measurement-tool">project website at Intel Labs Seattle</a>.</p>
+<p>The firmware is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/firmware/</tt>.</p>
 
 <pre>
 # backup original firmware, good for reference
@@ -136,7 +137,7 @@ sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/iwlwifi-5000-2.ucode
 cd						# Back out of the kernel tree
 git clone git://w1.fi/srv/git/hostap-07.git	# Get the code
 cd hostap-07/hostapd
-cp &lt;hostap-dotconfig&gt; .config			# Our hostap config from <a href="http://ils.intel-research.net/projects/80211n-channel-measurement-tool">ILS website</a>
+cp &lt;hostap-dotconfig&gt; .config			# Our hostap config from linux-80211n-csitool-supplementary/hostap-config-files/
 make
 cp &lt;hostapd.conf-test&gt; hostapd.conf		# Install the vanilla hostap conf we provide
 </pre>
@@ -144,7 +145,7 @@ cp &lt;hostapd.conf-test&gt; hostapd.conf		# Install the vanilla hostap conf we 
 <!--- ********************************************************************* -->
 <H4>6. Install the userspace logging utility.</H4>
 
-<p>Download the netlink.tar.gz file from the <a href="http://ils.intel-research.net/projects/80211n-channel-measurement-tool">project website at Intel Labs Seattle</a>.</p>
+<p>The userspace netlink tool that logs CSI is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/netlink/</tt>.</p>
 
 <pre>
 cd ~						# We assume you install into your home directory
