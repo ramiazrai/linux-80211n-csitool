@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+    <title>Linux 802.11n CSI Tool &mdash; Installation Instructions</title>
+    <link rel="stylesheet" href="css/dan.css"/>
+</head>
+<body width=600>
+
+
+<center><H1>Linux 802.11n CSI Tool</H1></center>
+
+<!--- ********************************************************************* -->
+
+<H2>Installation Instructions</H2>
+
+<!--- ********************************************************************* -->
+<H4>1. Install Ubuntu Linux</H4>
+
+<p>Our testbed runs 32-bit (a.k.a. x86) Ubuntu Linux, version 10.04LTS of the
+Server Edition. You can obtain it from the Ubuntu website, <a href="http://releases.ubuntu.com/lucid/">here</a>. [Direct link to: <a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.2-server-i386.iso">ISO</a> | <a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.2-server-i386.iso.torrent">Torrent</a>]</p>
+<p>You are of course free to use any flavor/version of Linux that you choose, but if you have issues, this is the only version of Linux we will support.</p>
+
+<!--- ********************************************************************* -->
+<H4>1a. (Optional) Configure Ubuntu for Kernel Development</H4>
+
+<p>If you are scripting commands you can either <tt>setuid</tt> them or you can just disable password checks for <tt>sudo</tt>.  I prefer the latter, it comes in handy more and requires less manual effort.  But, install your security patches.</p>
+<pre>
+sudo visudo
+# change
+# %admin ALL=(ALL) ALL
+# to
+# %admin ALL=NOPASSWD: ALL
+</pre>
+
+<p>If you are planning on modifying the driver and other parts of the wireless network stack, you'll want to make sure the modules aren't autoloaded.  This way, when you crash the machine, it'll stay up when it reboots!</p>
+<pre>
+sudo vim /etc/modprobe.d/blacklist.conf
+# Add this:
+	# blacklist modules under active development
+	blacklist iwlagn
+	blacklist iwlcore
+	blacklist mac80211
+	blacklist cfg80211
+</pre>
+
+<!--- ********************************************************************* -->
+<H4>2. Install necessary packages on Ubuntu</H4>
+
+<p>These are for ensuring you can compile and install our modified Linux kernel.</p>
+<pre>
+sudo apt-get -y install git-core kernel-package fakeroot build-essential ncurses-dev
+</pre>
+
+<p>These are for compiling our userspace tools.</p>
+<pre>
+sudo apt-get -y install libnl-dev libssl-dev	# Install some necessary libraries
+</pre>
+
+<p><tt>iw</tt> is the new <tt>iwconfig</tt>. You need it to do things like enable monitor mode and 40 MHz channels from the command line.</p>
+
+<pre>
+sudo apt-get -y install iw
+</pre>
+
+<!--- ********************************************************************* -->
+<H4>3. Download, configure, compile, and install our custom Linux kernel</H4>
+
+<p>We have moved the hosting of our custom kernel to <a href="http://www.github.com">GitHub</a>.  This is a surprisingly great, easy-to-use site.</p>
+
+<p>First, we fetch the code. We also fetch supplemental files such as custom firmware, userspace tools, and MATLAB scripts.</p>
+<pre>
+git clone git://github.com/dhalperi/linux-80211n-csitool.git
+git clone git://github.com/dhalperi/linux-80211n-csitool-supplementary.git
+</pre>
+
+<p>Next, we configure the kernel. We offer two options for how this can be done. V1: This version uses our optimized kernel config. It compiles very fast and
+has a lot of Linux cruft removed, but it may take a few tries to get it working
+for all the hardware on your system.</p>
+
+<pre>
+cd linux-80211n-csitool			# Go into the kernel src directory
+make oldconfig				# Use our optimized kernel config
+make menuconfig				# Enable your system-specific hardware
+</pre>
+
+<p>V2. This method uses the Ubuntu default config, which is designed to work on any system but generates a very large kernel image and takes much longer to compile.</p>
+
+<pre>
+cp /boot/config-`uname -r` .config
+make oldconfig
+</pre>
+
+<p>Now it's time to compile, and finally install the kernel.</p>
+
+<pre>
+make -j3 bzImage modules		# -j3 here is 3-way parallelism, try #cores+1
+sudo make install modules_install	# INSTALL
+sudo mkinitramfs -o /boot/initrd.img-`cat include/config/kernel.release` \
+	`cat include/config/kernel.release`	# create ramdisk used to boot
+sudo update-grub			# Only needed the first time for a new version
+</pre>
+
+<p>Next we install the Linux kernel-headers.  The userspace utilities that log the CSI reported by the NIC need this to function.</p>
+
+<pre>
+make headers_install	# creates a copy of the linux-headers in ./usr/include/
+sudo mkdir /usr/src/linux-headers-`cat include/config/kernel.release` \
+	&& sudo cp -rf usr/include
+	/usr/src/linux-headers-`cat include/config/kernel.release`/include
+</pre>
+
+<p>Finally, <b>reboot</b> into your new kernel.  If you have issues booting, boot back into the previous kernel and then look into your kernel config.</p>
+
+<!--- ********************************************************************* -->
+<H4>4. Install our custom firmware.</H4>
+
+<p>The firmware is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/firmware/</tt>.</p>
+
+<pre>
+# backup original firmware, good for reference
+sudo cp /lib/firmware/iwlwifi-5000-2.ucode /lib/firmware/iwlwifi-5000-2.ucode.orig
+# copy ours in separately, keeping name for reference
+sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/	
+# install ours
+sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/iwlwifi-5000-2.ucode
+</pre>
+
+<!--- ********************************************************************* -->
+<H4>5. Download and compile hostap.</H4>
+
+<p>At the time of writing, hostap 0.7 is the stable version.</p>
+
+<pre>
+cd						# Back out of the kernel tree
+git clone git://w1.fi/srv/git/hostap-07.git	# Get the code
+cd hostap-07/hostapd
+cp &lt;hostap-dotconfig&gt; .config			# Our hostap config from linux-80211n-csitool-supplementary/hostap-config-files/
+make
+cp &lt;hostapd.conf-test&gt; hostapd.conf		# Install the vanilla hostap conf we provide
+</pre>
+
+<!--- ********************************************************************* -->
+<H4>6. Install the userspace logging utility.</H4>
+
+<p>The userspace netlink tool that logs CSI is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/netlink/</tt>.</p>
+
+<pre>
+cd ~						# We assume you install into your home directory
+tar xzvf netlink.tar.gz				# Unzip the package
+cd netlink
+make						# hopefully the make succeeds!
+# If not, figure out why it didn't compile. Did you install the Linux headers above?
+</pre>
+
+<!--- ********************************************************************* -->
+<H4>7. Let's try it out!</H4>
+
+<p>First we'll test that <tt>hostap</tt> is working.</p>
+
+<pre>
+sudo modprobe iwlagn    # did it work?  Do you see logs about iwlwifi in the dmesg?
+sudo iwlist scanning    # did it work?  Did you get access points?
+sudo ~/hostap-07/hostapd/hostapd ~/hostap-07/hostapd/hostapd.conf
+# did it work? if you're in a busy network you should see probe requests going by
+# also, go to a machine you control and scan
+# go to a machine you control and associate sudo iwconfig wlan0 essid test
+# ... etc
+</pre>
+
+<p>Make sure to kill <tt>hostapd</tt> when you're done.</p>
+
+<p>Now let's try logging some beamforming information, i.e., CSI!</p>
+<pre>
+sudo rmmod iwlagn iwlcore mac80211 cfg80211		# remove the modules
+sudo modprobe iwlagn connector_log=0x1			# load the modules and set userspace beamforming logging
+&lt;first, associate and set up IP to an AP that will sending you HT packets&gt;
+cd ~/netlink
+sudo ./log_to_file tmp.dat
+ping &lt;AP IP address&gt;
+</pre>
+
+<p>Once the AP starts sending you HT (802.11n) packets, <tt>log_to_file</tt> will start printing messages in the kernel syslog.</p>
+
+<!--- ********************************************************************* -->
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ?
+        "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost +
+        "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        var pageTracker = _gat._getTracker("UA-3907502-1");
+        pageTracker._initData();
+        pageTracker._trackPageview();
+    </script>
+</body>
+</html>

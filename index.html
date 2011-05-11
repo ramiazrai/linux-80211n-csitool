@@ -1,189 +1,65 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
-    <title>Linux 802.11n CSI Tool &mdash; Installation Instructions</title>
+    <title>Linux 802.11n CSI Tool</title>
     <link rel="stylesheet" href="css/dan.css"/>
 </head>
 <body width=600 onload="scroll(0,0)">
 
-<H1>Linux 802.11n CSI Tool</H1>
-
+<!--
 <H3><a href="https://github.com/dhalperi/linux-80211n-csitool/">Click here for the latest commit at GitHub:</a></H3>
 <iframe id="csicommit" src="https://github.com/dhalperi/linux-80211n-csitool/#commit" width="100%" height="82" scrolling="no" frameborder="0" style="overflow: hidden;">
 <p>Your browser does not support iframes.</p>
 </iframe>
+-->
 
-<H3><a href="faq.html">Click here for the FAQ and other things to know.</a></H3>
-
-<H2>Installation Instructions</H2>
-
-<!--- ********************************************************************* -->
-<H4>1. Install Ubuntu Linux</H4>
-
-<p>Our testbed runs 32-bit (a.k.a. x86) Ubuntu Linux, version 10.04LTS of the
-Server Edition. You can obtain it from the Ubuntu website, <a href="http://releases.ubuntu.com/lucid/">here</a>. [Direct link to: <a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.2-server-i386.iso">ISO</a> | <a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.2-server-i386.iso.torrent">Torrent</a>]</p>
-<p>You are of course free to use any flavor/version of Linux that you choose, but if you have issues, this is the only version of Linux we will support.</p>
+<center>
+	<H1>Linux 802.11n CSI Tool</H1>
+	<H4><a href="#overview">Overview</a> | <a href="#publications">Publications</a> | <a href="#authors">Authors</a> | <a href="mailto: Daniel Halperin <dhalperi@cs.washington.edu>">Contact Us</a><br>
+	<a href="installation.html">Installation Instructions</a> | <a href="faq.html">FAQ</a></H4>
+</center>
 
 <!--- ********************************************************************* -->
-<H4>1a. (Optional) Configure Ubuntu for Kernel Development</H4>
 
-<p>If you are scripting commands you can either <tt>setuid</tt> them or you can just disable password checks for <tt>sudo</tt>.  I prefer the latter, it comes in handy more and requires less manual effort.  But, install your security patches.</p>
-<pre>
-sudo visudo
-# change
-# %admin ALL=(ALL) ALL
-# to
-# %admin ALL=NOPASSWD: ALL
-</pre>
+<H2>Overview</H2>
+<div class="figcontain" style="float:right;">
+<img width="100" src="img/iwlwifi-5300.png" alt="Picture of IWL5300 wireless NIC"><div class="figcaption">An Intel 5300 NIC</div>
+</div>
+</td>
+<p>This webpage contains instructions to use the Intel Wi-Fi Wireless Link 5300 802.11n MIMO radios for channel measurements using a custom modified firmware and open source Linux wireless drivers. We include all the software and scripts needed to run experiments, and to read and parse the channel measurements.</p>
 
-<p>If you are planning on modifying the driver and other parts of the wireless network stack, you'll want to make sure the modules aren't autoloaded.  This way, when you crash the machine, it'll stay up when it reboots!</p>
-<pre>
-sudo vim /etc/modprobe.d/blacklist.conf
-# Add this:
-	# blacklist modules under active development
-	blacklist iwlagn
-	blacklist iwlcore
-	blacklist mac80211
-	blacklist cfg80211
-</pre>
+<p>The IWL5300 provides 802.11n channel state information in a format that reports the channel matrices for 30 subcarrier groups, which is about one group for every 2 subcarriers at 20 MHz or one in 4 at 40 MHz. Each channel matrix entry is a complex number, with signed 8-bit resolution each for the real and imaginary parts. It specifies the gain and phase of the signal path between a single transmit-receive antenna pair.</p>
+
+<p>There is more information in our <a href="#publications">tool release announcement</a> below.</p>
+
+<div class="figcontain">
+<img width="269" src="img/csi.png" alt="Channel state information for four 1x1 links">
+<div class="figcaption">Example CSI for 4 SISO links</div>
+</div>
 
 <!--- ********************************************************************* -->
-<H4>2. Install necessary packages on Ubuntu</H4>
 
-<p>These are for ensuring you can compile and install our modified Linux kernel.</p>
-<pre>
-sudo apt-get -y install git-core kernel-package fakeroot build-essential ncurses-dev
-</pre>
-
-<p>These are for compiling our userspace tools.</p>
-<pre>
-sudo apt-get -y install libnl-dev libssl-dev	# Install some necessary libraries
-</pre>
-
-<p><tt>iw</tt> is the new <tt>iwconfig</tt>. You need it to do things like enable monitor mode and 40 MHz channels from the command line.</p>
-
-<pre>
-sudo apt-get -y install iw
-</pre>
+<H2 id="publications">Publications</H2>
+<ul>
+<li><a href="http://www.cs.washington.edu/homes/dhalperi/pubs/halperin_csitool.pdf" onClick="javascript: pageTracker._trackPageview('pubs/halperin_csitool.pdf');">Tool release: Gathering 802.11n traces with channel state information</a></a><br>
+<i>ACM SIGCOMM Computer Communication Review (CCR)</i>, January 2011.</li>
+<li><a href="http://www.cs.washington.edu/homes/dhalperi/pubs/comm356s-halperin.pdf" onClick="javascript: pageTracker._trackPageview('pubs/comm356s-halperin.pdf');">Predictable 802.11 packet delivery from wireless channel measurements</a></a><br>
+<i>ACM SIGCOMM</i> 2010.</li>
+<li><a href="http://www.cs.washington.edu/homes/dhalperi/pubs/halperin_80211n_power.pdf" onClick="javascript: pageTracker._trackPageview('pubs/halperin_80211n_power.pdf');">Demystifing 802.11n power consumption</a></a><br>
+<i>USENIX HotPower</i> 2010.</li>
+<li><a href="http://www.cs.washington.edu/homes/dhalperi/pubs/globecom2010_80211n_doppler.pdf" onClick="javascript: pageTracker._trackPageview('pubs/globecom2010_80211n_doppler.pdf');">Investigation into the Doppler component of the IEEE 802.11n channel model</a></a><br>
+<i>IEEE GLOBECOM &mdash; Wireless Communications</i> 2010.</li>
+<li><a href="http://www.cs.washington.edu/homes/dhalperi/pubs/mimo_for_dummies.pdf" onClick="javascript: pageTracker._trackPageview('pubs/mimo_for_dummies.pdf');">802.11 with multiple antennas for dummies</a></a><br>
+<i>ACM SIGCOMM Computer Communication Review (CCR)</i>, January 2010.</li>
+</ul>
 
 <!--- ********************************************************************* -->
-<H4>3. Download, configure, compile, and install our custom Linux kernel</H4>
 
-<p>We have moved the hosting of our custom kernel to <a href="http://www.github.com">GitHub</a>.  This is a surprisingly great, easy-to-use site.</p>
-
-<p>First, we fetch the code. We also fetch supplemental files such as custom firmware, userspace tools, and MATLAB scripts.</p>
-<pre>
-git clone git://github.com/dhalperi/linux-80211n-csitool.git
-git clone git://github.com/dhalperi/linux-80211n-csitool-supplementary.git
-</pre>
-
-<p>Next, we configure the kernel. We offer two options for how this can be done. V1: This version uses our optimized kernel config. It compiles very fast and
-has a lot of Linux cruft removed, but it may take a few tries to get it working
-for all the hardware on your system.</p>
-
-<pre>
-cd linux-80211n-csitool			# Go into the kernel src directory
-make oldconfig				# Use our optimized kernel config
-make menuconfig				# Enable your system-specific hardware
-</pre>
-
-<p>V2. This method uses the Ubuntu default config, which is designed to work on any system but generates a very large kernel image and takes much longer to compile.</p>
-
-<pre>
-cp /boot/config-`uname -r` .config
-make oldconfig
-</pre>
-
-<p>Now it's time to compile, and finally install the kernel.</p>
-
-<pre>
-make -j3 bzImage modules		# -j3 here is 3-way parallelism, try #cores+1
-sudo make install modules_install	# INSTALL
-sudo mkinitramfs -o /boot/initrd.img-`cat include/config/kernel.release` \
-	`cat include/config/kernel.release`	# create ramdisk used to boot
-sudo update-grub			# Only needed the first time for a new version
-</pre>
-
-<p>Next we install the Linux kernel-headers.  The userspace utilities that log the CSI reported by the NIC need this to function.</p>
-
-<pre>
-make headers_install	# creates a copy of the linux-headers in ./usr/include/
-sudo mkdir /usr/src/linux-headers-`cat include/config/kernel.release` \
-	&& sudo cp -rf usr/include
-	/usr/src/linux-headers-`cat include/config/kernel.release`/include
-</pre>
-
-<p>Finally, <b>reboot</b> into your new kernel.  If you have issues booting, boot back into the previous kernel and then look into your kernel config.</p>
-
-<!--- ********************************************************************* -->
-<H4>4. Install our custom firmware.</H4>
-
-<p>The firmware is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/firmware/</tt>.</p>
-
-<pre>
-# backup original firmware, good for reference
-sudo cp /lib/firmware/iwlwifi-5000-2.ucode /lib/firmware/iwlwifi-5000-2.ucode.orig
-# copy ours in separately, keeping name for reference
-sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/	
-# install ours
-sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/iwlwifi-5000-2.ucode
-</pre>
-
-<!--- ********************************************************************* -->
-<H4>5. Download and compile hostap.</H4>
-
-<p>At the time of writing, hostap 0.7 is the stable version.</p>
-
-<pre>
-cd						# Back out of the kernel tree
-git clone git://w1.fi/srv/git/hostap-07.git	# Get the code
-cd hostap-07/hostapd
-cp &lt;hostap-dotconfig&gt; .config			# Our hostap config from linux-80211n-csitool-supplementary/hostap-config-files/
-make
-cp &lt;hostapd.conf-test&gt; hostapd.conf		# Install the vanilla hostap conf we provide
-</pre>
-
-<!--- ********************************************************************* -->
-<H4>6. Install the userspace logging utility.</H4>
-
-<p>The userspace netlink tool that logs CSI is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/netlink/</tt>.</p>
-
-<pre>
-cd ~						# We assume you install into your home directory
-tar xzvf netlink.tar.gz				# Unzip the package
-cd netlink
-make						# hopefully the make succeeds!
-# If not, figure out why it didn't compile. Did you install the Linux headers above?
-</pre>
-
-<!--- ********************************************************************* -->
-<H4>7. Let's try it out!</H4>
-
-<p>First we'll test that <tt>hostap</tt> is working.</p>
-
-<pre>
-sudo modprobe iwlagn    # did it work?  Do you see logs about iwlwifi in the dmesg?
-sudo iwlist scanning    # did it work?  Did you get access points?
-sudo ~/hostap-07/hostapd/hostapd ~/hostap-07/hostapd/hostapd.conf
-# did it work? if you're in a busy network you should see probe requests going by
-# also, go to a machine you control and scan
-# go to a machine you control and associate sudo iwconfig wlan0 essid test
-# ... etc
-</pre>
-
-<p>Make sure to kill <tt>hostapd</tt> when you're done.</p>
-
-<p>Now let's try logging some beamforming information, i.e., CSI!</p>
-<pre>
-sudo rmmod iwlagn iwlcore mac80211 cfg80211		# remove the modules
-sudo modprobe iwlagn connector_log=0x1			# load the modules and set userspace beamforming logging
-&lt;first, associate and set up IP to an AP that will sending you HT packets&gt;
-cd ~/netlink
-sudo ./log_to_file tmp.dat
-ping &lt;AP IP address&gt;
-</pre>
-
-<p>Once the AP starts sending you HT (802.11n) packets, <tt>log_to_file</tt> will start printing messages in the kernel syslog.</p>
+<H2 id="authors">Authors</H2>
+<center>
+<H4><a href="http://www.cs.washington.edu/homes/dhalperi">Daniel Halperin</a> | <a href="http://www.cs.washington.edu/homes/wenjun">Wenjun Hu</a> | <a href="https://sites.google.com/site/anmolsheth/">Anmol Sheth</a> | <a href="http://www.cs.washington.edu/homes/djw">David Wetherall</a></H4>
+<p>Click here to <a href="mailto: Daniel Halperin <dhalperi@cs.washington.edu>">contact us</a>.</p>
+</center>
 
 <!--- ********************************************************************* -->
     <script type="text/javascript">
