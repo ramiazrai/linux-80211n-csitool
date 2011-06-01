@@ -104,9 +104,8 @@ sudo update-grub			# Only needed the first time for a new version
 
 <pre>
 make headers_install	# creates a copy of the linux-headers in ./usr/include/
-sudo mkdir /usr/src/linux-headers-`cat include/config/kernel.release` \
-	&& sudo cp -rf usr/include
-	/usr/src/linux-headers-`cat include/config/kernel.release`/include
+sudo mkdir /usr/src/linux-headers-`cat include/config/kernel.release`
+sudo cp -rf usr/include /usr/src/linux-headers-`cat include/config/kernel.release`/include
 </pre>
 
 <p>Finally, <b>reboot</b> into your new kernel.  If you have issues booting, boot back into the previous kernel and then look into your kernel config.</p>
@@ -120,7 +119,7 @@ sudo mkdir /usr/src/linux-headers-`cat include/config/kernel.release` \
 # backup original firmware, good for reference
 sudo cp /lib/firmware/iwlwifi-5000-2.ucode /lib/firmware/iwlwifi-5000-2.ucode.orig
 # copy ours in separately, keeping name for reference
-sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/	
+sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/
 # install ours
 sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/iwlwifi-5000-2.ucode
 </pre>
