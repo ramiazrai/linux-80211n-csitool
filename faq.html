@@ -6,14 +6,35 @@
 </head>
 <body width=600>
 
-<H1>Linux 802.11n CSI Tool</H1>
+<!--- ********************************************************************* -->
+<script language="javascript">
+	function toggle(link, divId) {
+		var lText = link.innerHTML;
+		var d = document.getElementById(divId);
+		if (lText == '+') {
+			link.innerHTML = '&#8722;';
+			d.style.display = 'block';
+		} else {
+			link.innerHTML = '+';
+			d.style.display = 'none';
+		}
+	}
+</script>
+<!--- ********************************************************************* -->
+
+<center>
+	<H1>Linux 802.11n CSI Tool</H1>
+	<H4><a href="index.html">Main Page</a> | <a href="mailto: Daniel Halperin <dhalperi@cs.washington.edu>">Contact Us</a><br>
+	<a href="https://github.com/dhalperi/linux-80211n-csitool/">GitHub</a> | <a href="installation.html">Installation Instructions</a></H4>
+</center>
+
 <H2>FAQ &amp; Things to Know</H2>
 
-
 <!--- ********************************************************************* -->
-<H3>1. Setting wireless bitrates (and getting/setting more station information)</H3>
+<H3 id="faqrate">1. Setting wireless bitrates (and getting/setting more station information) [<a href="javascript:void(0);" onclick="toggle(this, 'faqratefold');">+</a>] </H3>
 
-<H4>Station information in <tt>debugfs</tt></H4>
+<div id="faqratefold" style="display:none;">
+<H4>A. Station information in <tt>debugfs</tt></H4>
 
 <p>When the NIC connects to another 802.11 device (when it's a client, the AP; when it's an AP, the clients), it creates an entry for that device in <tt>debugfs</tt>.  To see the list of these other stations, run the following command. Note that <tt>phy0</tt> may have a different number on your machine depending on what other wireless devices have been installed.</p>
 
@@ -43,7 +64,7 @@ Start idx [0]=0x0 [1]=0x0 [2]=0x0 [3]=0x0
 
 <p>This gives us access to some basic information about the configuration of this client and that AP. For instance, we can see that all three transmit antennas are valid (<tt>valid_tx_ant ANT_A,ANT_B,ANT_C</tt>). We can see that this is not an 802.11n AP (<tt>lq type legacy</tt> &mdash; an 802.11n AP would say <tt>lq type HT</tt>). The last packet transmitted to this station was transmitted with rate <tt>0x420A</tt>, and we see below that that the rate used for all 16 transmit attempts is this same <tt>0x420A</tt>.<p>
 
-<H4>How rates are represented</H4>
+<H4>B. How rates are represented</H4>
 
 <p>Let's talk about this value <tt>0x420A</tt>. This value is usually stored in a variable that the driver calls <tt>rate_n_flags</tt>; it is a 32-bit unsigned integer and can be decomposed by looking at the <tt>RATE_MCS_</tt> flags and masks defined in <tt>iwl-commands.h</tt>. Here is a snippet:</p>
 
@@ -114,7 +135,7 @@ Start idx [0]=0x0 [1]=0x0 [2]=0x0 [3]=0x0
 
 <p>This is a MIMO packet using all 3 transmit antennas and 3 spatial streams, and it corresponds to the 3x26 Mbps rate that gives 78 Mbps in total.  Another way to think about the lower 8 bits of an HT rate is as the MCS (Modulation and Coding Scheme). See Tables 20-29 through 20-43 in the IEEE 802.11n standard for more information. Note that, currently, Intel's NICs only support equal modulation with 3 or fewer streams, that is, MCS 0&ndash;23 and also MCS 32.</p>
 
-<H4>Setting the transmit bitrate</H4>
+<H4>C. Setting the transmit bitrate</H4>
 
 <p>Intel has included a debug mode where you can set the transmit rate for a particular receiver. It sets all 16 attempts, in the case of a lossy link, to the same rate. Simply write the rate you wish to use into that same file.<p>
 
@@ -138,6 +159,170 @@ Start idx [0]=0x0 [1]=0x0 [2]=0x0 [3]=0x0
 </pre>
 
 <p>Here I've told the NIC to use two antennas, A and C, but have only given it a single-stream MCS. This is of course an illegal selection; I can use Antenna A or Antenna C, but not both!</p>
+</div>
+
+<!--- ********************************************************************* -->
+<H3>2. Processing CSI with MATLAB [<a href="javascript:void(0);" onclick="toggle(this, 'inspectcsi');">+</a>] </H3>
+
+<div id="inspectcsi" style="display:none;">
+<i>The following instructions apply to MATLAB and were tested on a Mac OS X computer using MATLAB 7.11.0 (R2010b). They will likely work, with few adjustments, using Octave instead.</i>
+
+<H4>A. Obtaining a CSI trace file</H4>
+
+<p>If you followed the <a href="installation.html">installation instructions</a> correctly, at the very end you should have generated a trace of CSI matrices using the <tt>log_to_file</tt> program:</p>
+
+<pre>
+cd ~/netlink
+sudo ./log_to_file tmp.dat
+ping &lt;AP IP address&gt;
+</pre>
+
+<p>If so, you can use your CSI log (<tt>tmp.dat</tt>), but we also include a sample CSI trace file in the <tt>linux-80211n-csitool-supplementary</tt> git repository.</p>
+
+<H4>B. Reading a CSI trace file into MATLAB</H4>
+
+<p>After checking out the latest copy of the <tt>linux-80211n-csitool-supplementary</tt> repository, start MATLAB and navigate to the <tt>matlab</tt> subdirectory.</p>
+
+<pre>
+cd ~/linux-80211n-csitool-supplementary/matlab
+</pre>
+
+<p>Read in the sample data file (or your own log file):</p>
+
+<pre>
+csi_trace = read_bf_file('sample_data/log.all_csi.6.7.6');
+</pre>
+
+<p><b>Note that this uses the MEX-compiled <tt>read_bfee.c</tt> to unpack the binary CSI format.</b> If this does not work for you, ensure that <tt>read_bfee.mexmaci</tt> (32-bit) and <tt>read_bfee.mexmaci64</tt> (64-bit) are present or recompile <tt>read_bfee.c</tt> using your MATLAB's version of MEX.</p>
+
+<p>In our sample file, <tt>csi_trace</tt> is a 1x29 cell array, which holds 29 structs. This contains the CSI information for 29 received packets. Let's inspect one of the entries:</p>
+
+<pre>
+&gt;&gt; csi_entry = csi_trace{1}	<b>(Note the curly-braces {}, not parentheses ().)</b>
+
+csi_entry = 
+
+       noise_a: 0
+       noise_b: 0
+       noise_c: 0
+    bfee_count: 72
+           Nrx: 3
+           Ntx: 1
+        rssi_a: 33
+        rssi_b: 37
+        rssi_c: 41
+         noise: -127
+           agc: 38
+          perm: [3 2 1]
+          rate: 256
+           csi: [1x3x30 double]
+</pre>
+
+<p>Let's break down this display:</p>
+
+<ul>
+	<li><b><tt>noise_a</tt></b>, <b><tt>noise_b</tt></b>, and <b><tt>noise_c</tt></b> correspond to the noise floor measured by the receiving NIC for each antenna this packet. However, the Intel drivers only measure the noise floor when the client is associated, either as a client or an access point. I collected the sample trace file in monitor mode, so these values are not present. Also, the total noise floor (<b><tt>noise</tt></b>) is set to the special value <tt>-127</tt> to indicate that it is invalid. The units of these 4 variables are <tt>dBm</tt>.</li>
+	<li><b><tt>bfee_count</tt></b> is simply a count of the total number of beamforming measurements that have been recorded by the driver and sent to userspace. The <tt>netlink</tt> channel between the kernel and userspace is lossy, so these can be used to detect measurements that were dropped in this pipe.</li>
+	<li><b><tt>Nrx</tt></b> represents the number of antennas used to receive the packet by this NIC, and <b><tt>Ntx</tt></b> represents the number of space/time streams transmitted. I measurement. In this case, the sender sent a single-stream packet and the receiver used all 3 antennas to receive it.</li>
+	<li><b><tt>rssi_a</tt></b>, <b><tt>rssi_b</tt></b>, and <b><tt>rssi_c</tt></b> correspond to RSSI measured by the receiving NIC at the input to each antenna port. This measurement is made during the packet preamble. This value is in <tt>dB</tt> relative to an internal reference; to get the received signal strength in <tt>dBm</tt> we must combine it with the Automatic Gain Control (AGC) setting (<b><tt>agc</tt></b>) in <tt>dB</tt> and also subtract off a magic constant. This process is explained below.</li>
+	<li><b><tt>perm</tt></b> tells us how the NIC permuted the signals from the 3 receive antennas into the 3 RF chains that process the measurements. The sample value of <b><tt>[3 2 1]</tt></b> implies that Antenna C was sent to RF Chain A, Antenna B to Chain B, and Antenna A to Chain C. This operation is performed by an antenna selection module in the NIC and generally corresponds to ordering the antennas in decreasing order of SNR.</li>
+	<li><b><tt>rate</tt></b> is the rate at which the packet was sent, in the same format as the <tt>rate_n_flags</tt> defined <a href="#faqrate">above</a>. Note that the antenna bits are omitted, as there is no way for the receiver to know which transmit antennas were used.</li>
+	<li><b><tt>csi</tt></b> is the CSI itself, normalized to an internal reference. It is a <tt><b>Ntx</b>&times;<b>Nrx</b>&times;30</tt> 3-D matrix where the third dimension is across 30 subcarriers in the OFDM channel. For a 20 MHz-wide channel, these correspond to about half the OFDM subcarriers, and for a 40 MHz-wide channel, this is about one in every 4 subcarriers. Which subcarriers were measured is defined by the 802.11n standard (in Table 7-25f on page 50).</li>
+</ul>
+
+<p>Now that we've described all the fields of this struct, we need to put them all together to compute the CSI in units of SNR rather than Intel's internal reference level. In particular, we need to combine the RSSI and AGC values together to get RSS in <tt>dBm</tt>, and include noise to get SNR. We use the script <tt>get_scaled_csi.m</tt> to do that:<p>
+
+<pre>
+&gt;&gt; csi = get_scaled_csi(csi_entry);
+</pre>
+
+<p>Finally, <tt><b>csi</b></tt> is a <tt>1&times;3&times;30</tt> matrix that represents the MIMO channel state for this link. It's units are in linear&mdash;i.e., not <tt>dB</tt>&mdash;voltage space. This is the format used in all textbooks I've seen, that is, we've normalized the CSI (in textbooks, usually called <i>H</i>) such that there is unit noise.</p>
+
+<H4>C. Inspecting the CSI</H4>
+
+<p>Let's start by looking at the three different spatial paths on the <tt>1&times;3</tt> link we measured:</p>
+
+<pre>
+&gt;&gt; plot(db(abs(squeeze(csi).')))
+&gt;&gt; legend('RX Antenna A', 'RX Antenna B', 'RX Antenna C', 'Location', 'SouthEast' );
+&gt;&gt; xlabel('Subcarrier index');
+&gt;&gt; ylabel('SNR [dB]');
+</pre>
+
+<p>In the plot command, <tt>squeeze()</tt> turns <b><tt>csi</tt></b> into a <tt>3&times;30</tt> matrix by removing the first singleton dimension. <tt>db()</tt> converts from linear (voltage) space into logarithmic (base-10, power) space. <tt>abs</tt> converts each complex number into its magnitude. Finally, the <tt><b>.'</tt></b> operator transposes the squeezed CSI from <tt>3&times;30</tt> matrix into a <tt>30&times;3</tt> matrix, and does not complement the complex numbers. Combined, we get the plot below.</p>
+
+<center>
+	<a href="img/sample_csi_plot.png"><img src="img/sample_csi_plot.png" width="400" title="a sample CSI plot"></a>
+</center>
+
+<p>We see that this is a mostly flat link, with relatively little frequency-selective fading (around <tt>3</tt> <tt>dB</tt> for most antenna pairs). However, there is a fair (perhaps <tt>8</tt> <tt>dB</tt>) difference between the best antenna C and the worst antenna A. This matches the difference between <b><tt>rssi_a</tt></b> and <b><tt>rssi_c</tt></b> (as we expect it should).</p>
+
+<H4>D. Computing effective SNR values</H4>
+
+<p>We'll conclude our discussion of the CSI by showing you how to compute the Effective SNR from our CSI matrices. To do so, we use the <tt>get_eff_SNRs</tt> script, which takes as input a CSI matrix and returns a <tt>7&times;4</tt> matrix of effective SNR values in linear (power) space. The 4 columns correspond to the effective SNR using the four 802.11 modulation schemes, namely BPSK/QPSK/16QAM/64QAM. The 7 rows correspond to the seven possible antenna selections with 3 antennas and 1, 2, or 3 spatial streams. In particular, the first 3 rows correspond to single-stream transmissions with antenna A, B, or C. The next 3 rows correspond to dual-stream transmissions with antennas AB, AC, or BC. The last row corresponds to a 3-stream transmission using all antennas.</p>
+
+<pre>
+&gt;&gt; db(get_eff_SNRs(csi), 'pow')
+
+ans =
+
+       Inf       Inf       Inf       Inf
+ -156.5356 -156.5356 -156.5356 -156.5356
+ -156.5356 -156.5356 -156.5356 -156.5356
+ -156.5356 -156.5356 -156.5356 -156.5356
+ -156.5356 -156.5356 -156.5356 -156.5356
+ -156.5356 -156.5356 -156.5356 -156.5356
+ -156.5356 -156.5356 -156.5356 -156.5356
+</pre>
+
+<p>Okay, that's pretty disappointing! What happened? Well, note that this is a <tt>1&times;3</tt> link, so the only valid antenna configuration is SIMO with the single transmit antenna we measured. The other 6 rows correspond to a very small SNR, i.e, a large, negative <tt>dB</tt>.</p>
+
+<p>Also, this is a very strong link&mdash;the SNR is around 51 <tt>dB</tt> for the strongest antenna. Not only that, but we can see that all subcarriers are stronger than 40 <tt>dB</tt>, so the frequency-selective fading should cause few errors even using the highest rate. There is so little error, in fact, that MATLAB's error functions can't distinguish it from zero, and the SNR is effectively infinite.</p>
+
+<p>Let's look at a <tt>3&times;3</tt> matrix instead:</p>
+
+<pre>
+&gt;&gt; csi_entry = csi_trace{20}
+
+csi_entry = 
+
+       noise_a: 0
+       noise_b: 0
+       noise_c: 0
+    bfee_count: 91
+           Nrx: 3
+           Ntx: 3
+        rssi_a: 34
+        rssi_b: 39
+        rssi_c: 39
+         noise: -127
+           agc: 40
+          perm: [2 3 1]
+          rate: 272
+           csi: [3x3x30 double]
+
+&gt;&gt; csi = get_scaled_csi(csi_entry);
+&gt;&gt; db(get_eff_SNRs(csi), 'pow')
+
+ans =
+
+       Inf       Inf       Inf       Inf
+       Inf       Inf       Inf       Inf
+       Inf       Inf       Inf       Inf
+       Inf       Inf       Inf   39.0068
+       Inf       Inf   38.1400   38.2261
+       Inf       Inf   35.3323   35.4946
+   13.9454   14.5517   17.1716   20.7060
+</pre>
+
+<p>Here, all 7 rows are valid because there are three transmit antennas. We see that all the SIMO streams are still very likely to work, as well as the MIMO2 transmissions, but only some of the MIMO3 rates will work. See our SIGCOMM 2010 paper for more details.</p>
+</div>
+
+<!--- ********************************************************************* -->
+
+<center>
+	<H4><a href="index.html">Back to the main page</a></H4>
+</center>
 
 <!--- ********************************************************************* -->
     <script type="text/javascript">
