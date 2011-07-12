@@ -122,6 +122,7 @@ sudo cp -rf usr/include /usr/src/linux-headers-`cat include/config/kernel.releas
 <pre>
 # backup original firmware, good for reference
 sudo cp /lib/firmware/iwlwifi-5000-2.ucode /lib/firmware/iwlwifi-5000-2.ucode.orig
+sudo mv /lib/firmware/iwlwifi-5000-5.ucode /lib/firmware/iwlwifi-5000-5.ucode.orig
 # copy ours in separately, keeping name for reference
 sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/
 # install ours
