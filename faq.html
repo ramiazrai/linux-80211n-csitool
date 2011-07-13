@@ -202,26 +202,24 @@ csi_trace = read_bf_file('sample_data/log.all_csi.6.7.6');
 
 csi_entry = 
 
-       noise_a: 0
-       noise_b: 0
-       noise_c: 0
-    bfee_count: 72
-           Nrx: 3
-           Ntx: 1
-        rssi_a: 33
-        rssi_b: 37
-        rssi_c: 41
-         noise: -127
-           agc: 38
-          perm: [3 2 1]
-          rate: 256
-           csi: [1x3x30 double]
+    timestamp_low: 0
+       bfee_count: 72
+              Nrx: 3
+              Ntx: 1
+           rssi_a: 33
+           rssi_b: 37
+           rssi_c: 41
+            noise: -127
+              agc: 38
+             perm: [3 2 1]
+             rate: 256
+              csi: [1x3x30 double]
 </pre>
 
 <p>Let's break down this display:</p>
 
 <ul>
-	<li><b><tt>noise_a</tt></b>, <b><tt>noise_b</tt></b>, and <b><tt>noise_c</tt></b> correspond to the noise floor measured by the receiving NIC for each antenna. After you subtract an Intel offset of 107, these values are in the units of <tt>dBm</tt>. This information is measured during an expected period of silence right before a beacon interval. Hence, the Intel drivers only measure the noise floor when the node is associated, as a client. I collected the sample trace file in monitor mode, so these values are not present. Also, the total noise floor (<b><tt>noise</tt></b>, with the 107 <tt>dB</tt> offset already corrected, is in <tt>dBm</tt>) is set to the special value <tt>-127</tt> to indicate that it is invalid.
+	<li><b><tt>timestamp_low</tt></b> is the low 32 bits of the NIC's clock. It is given in TUs (measurements of 1.024 microseconds). It wraps about every 4400 seconds, or 73 minutes. This field was not yet recorded in the sample trace, so all values will be zero.</li>
 	<li><b><tt>bfee_count</tt></b> is simply a count of the total number of beamforming measurements that have been recorded by the driver and sent to userspace. The <tt>netlink</tt> channel between the kernel and userspace is lossy, so these can be used to detect measurements that were dropped in this pipe.</li>
 	<li><b><tt>Nrx</tt></b> represents the number of antennas used to receive the packet by this NIC, and <b><tt>Ntx</tt></b> represents the number of space/time streams transmitted. In this case, the sender sent a single-stream packet and the receiver used all 3 antennas to receive it.</li>
 	<li><b><tt>rssi_a</tt></b>, <b><tt>rssi_b</tt></b>, and <b><tt>rssi_c</tt></b> correspond to RSSI measured by the receiving NIC at the input to each antenna port. This measurement is made during the packet preamble. This value is in <tt>dB</tt> relative to an internal reference; to get the received signal strength in <tt>dBm</tt> we must combine it with the Automatic Gain Control (AGC) setting (<b><tt>agc</tt></b>) in <tt>dB</tt> and also subtract off a magic constant. This process is explained below.</li>
@@ -286,20 +284,18 @@ ans =
 
 csi_entry = 
 
-       noise_a: 0
-       noise_b: 0
-       noise_c: 0
-    bfee_count: 91
-           Nrx: 3
-           Ntx: 3
-        rssi_a: 34
-        rssi_b: 39
-        rssi_c: 39
-         noise: -127
-           agc: 40
-          perm: [2 3 1]
-          rate: 272
-           csi: [3x3x30 double]
+    timestamp_low: 0
+       bfee_count: 91
+              Nrx: 3
+              Ntx: 3
+           rssi_a: 34
+           rssi_b: 39
+           rssi_c: 39
+            noise: -127
+              agc: 40
+             perm: [2 3 1]
+             rate: 272
+              csi: [3x3x30 double]
 
 &gt;&gt; csi = get_scaled_csi(csi_entry);
 &gt;&gt; db(get_eff_SNRs(csi), 'pow')
