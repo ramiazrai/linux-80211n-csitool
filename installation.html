@@ -149,10 +149,8 @@ cp &lt;hostapd.conf-test&gt; hostapd.conf		# Install the vanilla hostap conf we 
 <p>The userspace netlink tool that logs CSI is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/netlink/</tt>.</p>
 
 <pre>
-cd ~						# We assume you install into your home directory
-tar xzvf netlink.tar.gz				# Unzip the package
-cd netlink
-make						# hopefully the make succeeds!
+cd ~/linux-80211n-csitool-supplementary/netlink		# We assume you install into your home directory
+make							# hopefully the make succeeds!
 # If not, figure out why it didn't compile. Did you install the Linux headers above?
 </pre>
 
@@ -178,7 +176,7 @@ sudo ~/hostap-07/hostapd/hostapd ~/hostap-07/hostapd/hostapd.conf
 sudo rmmod iwlagn iwlcore mac80211 cfg80211		# remove the modules
 sudo modprobe iwlagn connector_log=0x1			# load the modules and set userspace beamforming logging
 &lt;first, associate and set up IP to an AP that will sending you HT packets&gt;
-cd ~/netlink
+cd ~/linux-80211n-csitool-supplementary/netlink
 sudo ./log_to_file tmp.dat
 ping &lt;AP IP address&gt;
 </pre>
