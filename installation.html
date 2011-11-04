@@ -41,8 +41,7 @@ sudo visudo
 sudo vim /etc/modprobe.d/blacklist.conf
 # Add this:
 	# blacklist modules under active development
-	blacklist iwlagn
-	blacklist iwlcore
+	blacklist iwlwifi
 	blacklist mac80211
 	blacklist cfg80211
 </pre>
@@ -160,7 +159,7 @@ make							# hopefully the make succeeds!
 <p>First we'll test that <tt>hostap</tt> is working.</p>
 
 <pre>
-sudo modprobe iwlagn    # did it work?  Do you see logs about iwlwifi in the dmesg?
+sudo modprobe iwlwifi   # did it work?  Do you see logs about iwlwifi in the dmesg?
 sudo iwlist scanning    # did it work?  Did you get access points?
 sudo ~/hostap-07/hostapd/hostapd ~/hostap-07/hostapd/hostapd.conf
 # did it work? if you're in a busy network you should see probe requests going by
@@ -173,8 +172,8 @@ sudo ~/hostap-07/hostapd/hostapd ~/hostap-07/hostapd/hostapd.conf
 
 <p>Now let's try logging some beamforming information, i.e., CSI!</p>
 <pre>
-sudo rmmod iwlagn iwlcore mac80211 cfg80211		# remove the modules
-sudo modprobe iwlagn connector_log=0x1			# load the modules and set userspace beamforming logging
+sudo rmmod iwlwifi mac80211 cfg80211			# remove the modules
+sudo modprobe iwlwifi connector_log=0x1			# load the modules and set userspace beamforming logging
 &lt;first, associate and set up IP to an AP that will sending you HT packets&gt;
 cd ~/linux-80211n-csitool-supplementary/netlink
 sudo ./log_to_file tmp.dat
