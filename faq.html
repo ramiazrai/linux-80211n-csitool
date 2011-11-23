@@ -28,7 +28,7 @@
 	<a href="https://github.com/dhalperi/linux-80211n-csitool/">GitHub</a> | <a href="installation.html">Installation Instructions</a></H4>
 </center>
 
-<H2>FAQ &amp; Things to Know</H2>
+<H2>FAQ, Things to Know, and Troubleshooting</H2>
 
 <!--- ********************************************************************* -->
 <H3 id="faqrate">1. Setting wireless bitrates (and getting/setting more station information) [<a href="javascript:void(0);" onclick="toggle(this, 'faqratefold');">+</a>] </H3>
@@ -312,6 +312,14 @@ ans =
 </pre>
 
 <p>Here, all 7 rows are valid because there are three transmit antennas. We see that all the SIMO streams are still very likely to work, as well as the MIMO2 transmissions, but only some of the MIMO3 rates will work. See our SIGCOMM 2010 paper for more details.</p>
+</div>
+
+<!--- ********************************************************************* -->
+<H3 id="troublenm">3. Troubleshooting: "deauthenticating.....by local choice (reason=3)" in dmesg [<a href="javascript:void(0);" onclick="toggle(this, 'troublenmfold');">+</a>] </H3>
+
+<div id="troublenmfold" style="display:none;">
+
+<p>Have you disabled or uninstalled Ubuntu's <tt>network-manager</tt> software?</p>
 </div>
 
 <!--- ********************************************************************* -->
