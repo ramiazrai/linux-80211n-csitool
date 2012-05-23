@@ -331,6 +331,21 @@ ans =
 </div>
 
 <!--- ********************************************************************* -->
+<H3 id="csirx">5. For which packets is CSI measured? [<a href="javascript:void(0);" onclick="toggle(this, 'csirxfold');">+</a>] </H3>
+
+<div id="csirxfold" style="display:none;">
+
+<p>CSI is measured from a received packet under the following conditions:</p>
+<ul>
+	<li><p>The packet is received correctly.</p></li>
+	<li><p>The packet is sent using an 802.11n "HT" rate.</p></li>
+	<li><p>The packet is from a client to its AP, or an AP to its client, OR</p></li>
+	<li><p>the packet is sent to a hardcoded, fixed address 00:16:ea:12:34:56 from a broadcast node. See the injection scripts.</p></li>
+</ul>
+<p>In other words, CSI is <strong>not</strong> recorded for overheard 802.11n conversations. It is also not recorded for beacons from a connected AP if they are sent a non-HT rate (e.g., the 802.11a/g 6 Mbps rate). I also note that there is only one CSI measurement per 802.11n A-MPDU (aggregation batch) since there is really only "one" preamble.</p>
+</div>
+
+<!--- ********************************************************************* -->
 
 <center>
 	<H4><a href="index.html">Back to the main page</a></H4>
