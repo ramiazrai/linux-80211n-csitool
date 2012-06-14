@@ -164,11 +164,15 @@ sudo iwlist scanning    # did it work?  Did you get access points?
 sudo ~/hostap-07/hostapd/hostapd ~/hostap-07/hostapd/hostapd.conf
 # did it work? if you're in a busy network you should see probe requests going by
 # also, go to a machine you control and scan
-# go to a machine you control and associate sudo iwconfig wlan0 essid test
+# go to a machine you control and associate sudo iwconfig wlan0 essid csitool-test
 # ... etc
 </pre>
 
-<p>Make sure to kill <tt>hostapd</tt> when you're done.</p>
+<p>Make sure to kill <tt>hostapd</tt> when you're done. Then put 802.11n-enabled <tt>hostapd</tt> config file in place:</p>
+
+<pre>
+cp &lt;hostapd.conf-real&gt; hostapd.conf		# Install the real hostap conf we provide
+</pre>
 
 <p>Now let's try logging some beamforming information, i.e., CSI!</p>
 <pre>
