@@ -15,12 +15,6 @@
 
 <!--- ********************************************************************* -->
 
-<H2><font color="red">Note</font></H2>
-
-<p><strong><font color="red">As of 28 September 2012, this tool is going into <em>stable maintainence mode</em>. This means that we will no longer be tracking the active Linux tree, instead following the stable Linux tree on revision 3.5.</font></strong></p>
-
-<!--- ********************************************************************* -->
-
 <H2>Installation Instructions</H2>
 
 <!--- ********************************************************************* -->
@@ -47,6 +41,7 @@ sudo visudo
 sudo vim /etc/modprobe.d/blacklist.conf
 # Add this:
 	# blacklist modules under active development
+	blacklist iwldvm
 	blacklist iwlwifi
 	blacklist mac80211
 	blacklist cfg80211
@@ -78,7 +73,7 @@ sudo apt-get -y install iw
 
 <p>First, we fetch the code. We also fetch supplemental files such as custom firmware, userspace tools, and MATLAB scripts.</p>
 <pre>
-git clone -b csitool-stable git://github.com/dhalperi/linux-80211n-csitool.git
+git clone git://github.com/dhalperi/linux-80211n-csitool.git
 git clone git://github.com/dhalperi/linux-80211n-csitool-supplementary.git
 </pre>
 
