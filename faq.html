@@ -353,6 +353,16 @@ ans =
 	<p>The set of subcarriers measured is specified by the IEEE 802.11n-2009 standard; see Table 7-25f. Intel's implementation only supports the versions that measure 30 subcarriers each, corresponding to <em>Ng</em> = 2 for 20 MHz and <em>Ng</em> = 4 for 40 MHz.</p>
 </div>
 
+
+<!--- ********************************************************************* -->
+<H3 id="encryption">7. Why doesn't the CSI tool work for encrypted access points? [<a href="javascript:void(0);" onclick="toggle(this, 'encryptionfold');">+</a>] </H3>
+
+<div id="encryptionfold" style="display:none;">
+
+	<p>The firmware for this device did not have enough code room for both the beamforming software paths (required to measure CSI) and the encryption software paths (required for WEP/WPA/WPA2/etc. networks).</p>
+	<p>There may be a workaround if you can get the kernel software stack to use the kernel's software implementation of crypto, but I've never had the time to try it. Please let me know if you get it to work!</p>
+</div>
+
 <!--- ********************************************************************* -->
 
 <center>
