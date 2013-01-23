@@ -187,10 +187,14 @@ sudo modprobe iwlwifi connector_log=0x1			# load the modules and set userspace b
 &lt;first, associate and set up IP to an AP that will send you HT packets&gt;
 cd ~/linux-80211n-csitool-supplementary/netlink
 sudo ./log_to_file tmp.dat
+</pre>
+<p>In a different terminal, start pinging the access point</p>
+<pre>
 ping &lt;AP IP address&gt;
 </pre>
+<p>By pinging the AP (make sure the pings are answered!), you are starting traffic flow between your client and AP. Intel has programmed its drivers to start in Legacy (802.11a/g) mode, thus the first pings will be sent at the 1Mbps or 6Mbps rate. For legacy rates, CSI will not be measured.</p>
 
-<p>Once the AP starts sending you HT (802.11n) packets, <tt>log_to_file</tt> will start printing messages in the kernel syslog.</p>
+<p>After a few dozen pings, the rate selection should automatically switch to HT (802.11n) bitrates. At this point, <tt>log_to_file</tt> will start recording packets and the <tt>iwlwifi</tt> driver will print messages in the kernel syslog.</p>
 
 <!--- ********************************************************************* -->
 
