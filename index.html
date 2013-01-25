@@ -15,7 +15,7 @@
 
 <center>
 	<H1>Linux 802.11n CSI Tool</H1>
-	<H4><a href="#overview">Overview</a> | <a href="#citation">Citation</a> | <a href="#publications">Publications</a> | <a href="#authors">Authors</a><br>
+	<H4><a href="#overview">Overview</a> | <a href="#citation">Citation</a> | <a href="#publications">Publications</a> | <a href="#external">Users</a> | <a href="#authors">Authors</a><br>
 		<a href="https://github.com/dhalperi/linux-80211n-csitool/">GitHub</a> | <a href="installation.html">Installation Instructions</a> | <a href="faq.html">FAQ</a> | <a href="mailto: Daniel Halperin <dhalperi@cs.washington.edu>">Contact Us</a>
 	</H4>
 </center>
@@ -27,7 +27,7 @@
 <img width="100" src="img/iwlwifi-5300.png" alt="Picture of IWL5300 wireless NIC"><div class="figcaption">An Intel 5300 NIC</div>
 </div>
 </td>
-<p>This webpage contains instructions to use the Intel Wi-Fi Wireless Link 5300 802.11n MIMO radios for channel measurements using a custom modified firmware and open source Linux wireless drivers. We include all the software and scripts needed to run experiments, and to read and parse the channel measurements.</p>
+<p>This webpage contains instructions to use our 802.11n measurement and experimentation platform. The CSI Tool is built on the Intel Wi-Fi Wireless Link 5300 802.11n MIMO radios, using a custom modified firmware and open source Linux wireless drivers. We include all the software and scripts needed to run experiments, and to read and parse the channel measurements.</p>
 
 <p>The IWL5300 provides 802.11n channel state information in a format that reports the channel matrices for 30 subcarrier groups, which is about one group for every 2 subcarriers at 20 MHz or one in 4 at 40 MHz. Each channel matrix entry is a complex number, with signed 8-bit resolution each for the real and imaginary parts. It specifies the gain and phase of the signal path between a single transmit-receive antenna pair.</p>
 
@@ -41,12 +41,14 @@
 <!--- ********************************************************************* -->
 <H2 id="Citation">Citation</H2>
 
-<p>If you wish cite this tool, the best reference is the CCR 2011 paper described below, <a href="http://ccr.sigcomm.org/online/?q=node/719">linked here</a> or using <a href="csitool.bib">this BibTeX file</a>.</p>
+<p>To cite this tool, the best reference is the CCR 2011 paper described below, <a href="http://ccr.sigcomm.org/online/?q=node/719">linked here</a> or using <a href="csitool.bib">this BibTeX file</a>.</p>
 
 <!--- ********************************************************************* -->
 
 <H2 id="publications">Publications</H2>
 <ul>
+<li><a href="http://dl.acm.org/citation.cfm?id=2348543.2348573">ParCast: Soft video delivery in MIMO-OFDM WLANs</a><br>
+<em>ACM MobiCom</em> 2012.</li>
 <li><a href="http://www.cs.washington.edu/homes/dhalperi/pubs/halperin_csitool.pdf" onClick="javascript: pageTracker._trackPageview('pubs/halperin_csitool.pdf');">Tool release: Gathering 802.11n traces with channel state information</a></a><br>
 <i>ACM SIGCOMM Computer Communication Review (CCR)</i>, January 2011.</li>
 <li><a href="http://www.cs.washington.edu/homes/dhalperi/pubs/comm356s-halperin.pdf" onClick="javascript: pageTracker._trackPageview('pubs/comm356s-halperin.pdf');">Predictable 802.11 packet delivery from wireless channel measurements</a></a><br>
@@ -58,6 +60,40 @@
 <li><a href="http://www.cs.washington.edu/homes/dhalperi/pubs/mimo_for_dummies.pdf" onClick="javascript: pageTracker._trackPageview('pubs/mimo_for_dummies.pdf');">802.11 with multiple antennas for dummies</a></a><br>
 <i>ACM SIGCOMM Computer Communication Review (CCR)</i>, January 2010.</li>
 </ul>
+
+<!--- ********************************************************************* -->
+
+<H2 id="external">Users</H2>
+<p>More than our own work, we are excited about <em>others</em> using our platform to advance the state of the art. We are proud to list the following published papers using our tools and data. If our tool helps you in your work, please <a href="mailto: Daniel Halperin <dhalperi@cs.washington.edu>">let us know</a>!</p>
+
+<ol>
+<li>Zimu Zhou, Zheng Yang, Chenshu Wu, Longfei Shangguan, and Yunhao Liu.<br>
+<a href="http://long.srfid.org/files/2113/5821/6452/zzhou_infocom13_camera_ready.pdf">Towards Omnidirectional Passive Human Detection</a>. IEEE INFOCOM 2013.</li>
+<li>Suchul Lee and Chong-Kwon Kim.<br>
+<a href="http://popeye.snu.ac.kr/~sclee/doc/icnp2012-sclee.pdf">D-Fi: A Diversity-Aware Wi-Fi Using An OFDM-based Bloom Filter</a>. IEEE ICNP 2012.</li>
+<li>Jizhong Zhao, Wei Xi, Jinsong Han, Shaojie Tang, Xiangyang Li, Yunhao Liu, Yihong Gong, and Zehua Zhou.<br>
+<a href="http://arxiv.org/abs/1208.0688">Efficient and Secure Key Extraction using CSI without Chasing down Errors</a>. arXiv, 2012.</li>
+<li>Jiang Xiao, Kaishun Wu, Youwen Yi, Lu Wang, and Lionel M. Ni.<br>
+<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6413692&tag=1">FIMD: Fine-grained Device-free Motion Detection</a>. IEEE ICPADS 2012.</li>
+<li>Kaishun Wu, Jiang Xiao, Youwen Yi, Dihu Chen, Xiaonan Luo, and Lionel M. Ni.<br>
+<a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=6244790">CSI-based Indoor Localization</a>. IEEE TPDS 2012.</li>
+<li>Hariharan Rahul, Swarun Kumar, and Dina Katabi.<br>
+<a href="http://people.csail.mit.edu/rahul/papers/sourcesync-sigcomm2010.pdf">MegaMIMO: Scaling Wireless Capacity with User Demands</a>. ACM SIGCOMM 2012.</li>
+<li>Jiang Xiao, Kaishun Wu, Youwen Yi, and Lionel M. Ni.<br>
+<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6289200">FIFS: Fine-Grained Indoor Fingerprinting System</a>. IEEE ICCCN 2012.</li>
+<li>Souvik Sen, Romit Roy Choudhury, and Srihari Nelakuditi.<br>
+<a href="http://scholar.google.com/citations?view_op=view_citation&citation_for_view=PHSRD88AAAAJ:UebtZRa9Y70C">SpinLoc: Spin once to know your location</a>. HotMobile 2012.</li>
+<li>Riccardo Crepaldi, Jeongkeun Lee, Raul Etkin, Sung-Ju Lee, and Robin Kravets.<br>
+<a href="http://scholar.google.com/citations?view_op=view_citation&citation_for_view=dSs64v4AAAAJ:8k81kl-MbHgC">CSI-SF: Estimating wireless channel state using CSI sampling & fusion</a>. IEEE INFOCOM 2012.</li>
+<li>Kaishun Wu, Jiang Xiao, Youwen Yi, Min Gao, and Lionel M. Ni.<br>
+<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6195606&tag=1">FILA: Fine-grained indoor localization</a>. IEEE INFOCOM 2012.</li>
+<li>Souvik Sen, Romit Roy Choudhury, Bozidar Radunovic, and Tom Minka.<br>
+<a href="http://scholar.google.com/citations?view_op=view_citation&citation_for_view=PHSRD88AAAAJ:UeHWp8X0CEIC">Precise indoor localization using PHY layer information</a>. HotNets 2011.</li>
+<li>Apurv Bhartia, Yi-Chao Chen, Swati Rallapalli, and Lili Qiu.<br>
+<a href="http://scholar.google.com/citations?view_op=view_citation&citation_for_view=yFymwfIAAAAJ:u-x6o8ySG0sC">Harnessing Frequency Diversity in Wi-Fi Networks</a>. ACM MobiCom 2011.</li>
+<li>Michelle X. Gong, Eldad Perahia, Roy Want, and Shiwen Mao.<br>
+<a href="http://scholar.google.com/citations?view_op=view_citation&citation_for_view=z_p2Kr8AAAAJ:5ugPr518TE4C">Training protocols for multi-user MIMO wireless LANs</a>. IEEE PIMRC 2010.</li>
+</ol>
 
 <!--- ********************************************************************* -->
 
