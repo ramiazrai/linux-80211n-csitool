@@ -36,10 +36,11 @@
 #include "iwl-io.h"
 #include "iwl-agn-hw.h"
 #include "iwl-trans.h"
-#include "iwl-connector.h"
 #include "iwl-modparams.h"
+
 #include "dev.h"
 #include "agn.h"
+#include "connector.h"
 
 int iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb,
 		struct iwl_device_cmd *cmd)

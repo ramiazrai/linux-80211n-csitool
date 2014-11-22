@@ -33,10 +33,10 @@
 #include <net/mac80211.h>
 #include <asm/unaligned.h>
 #include "iwl-io.h"
-#include "iwl-connector.h"
 #include "dev.h"
 #include "calib.h"
 #include "agn.h"
+#include "connector.h"
 
 #define IWL_CMD_ENTRY(x) [x] = #x
 

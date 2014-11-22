@@ -47,7 +47,6 @@
 #include "iwl-eeprom-read.h"
 #include "iwl-eeprom-parse.h"
 #include "iwl-io.h"
-#include "iwl-connector.h"
 #include "iwl-trans.h"
 #include "iwl-op-mode.h"
 #include "iwl-drv.h"
@@ -57,6 +56,7 @@
 #include "dev.h"
 #include "calib.h"
 #include "agn.h"
+#include "connector.h"
 
 
 /******************************************************************************
@@ -2168,7 +2168,7 @@ static int __init iwl_init(void)
 
 	ret = iwlagn_register_connector();
 	if (ret) {
-		pr_err("Unable to initialize connector\n");
+		pr_err("Unable to initialize connector: %d\n", ret);
 		goto error_connector_register;
 	}
 
@@ -2191,8 +2191,8 @@ module_init(iwl_init);
 
 static void __exit iwl_exit(void)
 {
-	iwlagn_unregister_connector();
 	iwl_opmode_deregister("iwldvm");
+	iwlagn_unregister_connector();
 	iwlagn_rate_control_unregister();
 }
 module_exit(iwl_exit);

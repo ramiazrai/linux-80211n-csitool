@@ -29,7 +29,7 @@
  *
  *****************************************************************************/
 
-#include "iwl-connector.h"
+#include "connector.h"
 #include <linux/export.h>
 
 /**
