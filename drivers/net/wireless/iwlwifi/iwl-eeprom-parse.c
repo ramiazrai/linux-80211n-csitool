@@ -594,19 +594,14 @@ static int iwl_init_channel_map(struct device *dev, const struct iwl_cfg *cfg,
 			/* set no-HT40, will enable as appropriate later */
 			channel->flags = IEEE80211_CHAN_NO_HT40;
 
-			/*
-			 * Dan: Disable these regulatory settings from the
-			 * EEPROM.
-			 *
 			if (!(eeprom_ch->flags & EEPROM_CHANNEL_IBSS))
 				channel->flags |= IEEE80211_CHAN_NO_IBSS;
 
-			if (eeprom_ch->flags & EEPROM_CHANNEL_RADAR)
-				channel->flags |= IEEE80211_CHAN_RADAR;
-
 			if (!(eeprom_ch->flags & EEPROM_CHANNEL_ACTIVE))
 				channel->flags |= IEEE80211_CHAN_PASSIVE_SCAN;
-			 */
+
+			if (eeprom_ch->flags & EEPROM_CHANNEL_RADAR)
+				channel->flags |= IEEE80211_CHAN_RADAR;
 
 			/* Initialize regulatory-based run-time data */
 			channel->max_power =
