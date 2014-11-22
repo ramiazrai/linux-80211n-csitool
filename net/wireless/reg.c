@@ -670,11 +670,7 @@ static u32 map_regdom_flags(u32 rd_flags)
 		channel_flags |= IEEE80211_CHAN_NO_IBSS;
 	if (rd_flags & NL80211_RRF_DFS)
 		channel_flags |= IEEE80211_CHAN_RADAR;
-	/*
-	 * Dan: Disable this regulatory check.
-	 * return channel_flags;
-	 */
-	return 0;
+	return channel_flags;
 }
 
 static int freq_reg_info_regd(struct wiphy *wiphy,
