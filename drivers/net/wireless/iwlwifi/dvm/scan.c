@@ -556,8 +556,7 @@ static int iwl_get_channels_for_scan(struct iwl_priv *priv,
 		channel = chan->hw_value;
 		scan_ch->channel = cpu_to_le16(channel);
 
-		if (!is_active || (chan->flags & IEEE80211_CHAN_PASSIVE_SCAN)
-				|| (chan->band == IEEE80211_BAND_5GHZ))
+		if (!is_active || (chan->flags & IEEE80211_CHAN_PASSIVE_SCAN))
 			scan_ch->type = SCAN_CHANNEL_TYPE_PASSIVE;
 		else
 			scan_ch->type = SCAN_CHANNEL_TYPE_ACTIVE;
@@ -770,7 +769,7 @@ static int iwlagn_request_scan(struct iwl_priv *priv, struct ieee80211_vif *vif)
 				n_probes++;
 				p++;
 			}
-			//is_active = true;
+			is_active = true;
 		} else
 			IWL_DEBUG_SCAN(priv, "Start passive scan.\n");
 		break;
