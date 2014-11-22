@@ -858,7 +858,7 @@ static void iwl_ucode_callback(const struct firmware *ucode_raw, void *context)
 
 	if (ucode_raw->size != 336252) {
 		IWL_ERR(drv,
-			"Firmware size does not match iwlwifi-5000-2.ucode.sigcomm2010. The UW 802.11n CSI Tool will not work.");
+			"Firmware size does not match iwlwifi-5000-2.ucode.sigcomm2010. The UW 802.11n CSI Tool will not work.\n");
 	}
 
 	IWL_INFO(drv, "loaded firmware version %s", drv->fw.fw_version);
