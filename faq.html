@@ -383,6 +383,16 @@ ans =
 	<p>A very strong thank you to Intel for very graciously allowing us to use and distribute the binary version of the modified firmware!</p>
 </div>
 
+<!--- ********************************************************************* -->
+<H3 id="apmode">10. How do I deal with firmware crashes in AP mode? [<a href="javascript:void(0);" onclick="toggle(this, 'apmodefold');">+</a>] </H3>
+
+<div id="apmodefold" style="display:none;">
+
+	<p>The access point implementation on this chipset is fairly incomplete; the feature was started and abandoned internally, and the engineers never subjected it to rigorous tests. We enabled it for the CSI Tool as a hack. In our experiments, AP mode seemed to work well enough for links that also used an Intel 5300 client in a quiet network, but other Wi-Fi devices sometimes cause unavoidable crashes.</p>
+	<p>In our own work, we found the CSI Tool to be most effective when using the injection scripts with devices in monitor mode. Client mode, AP mode, and ad-hoc modes never worked well, if at all, for us.</p>
+</div>
+
+<!--- ********************************************************************* -->
 <center>
 	<H4><a href="index.html">Back to the main page</a></H4>
 </center>
