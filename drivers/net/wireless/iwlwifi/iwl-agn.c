@@ -3024,6 +3024,7 @@ static int iwl_init_drv(struct iwl_priv *priv)
 	priv->rotate_rate_total = 0;	/* Disabled */
 	priv->rotate_rate_array = NULL;	/* Disabled */
 	priv->monitor_tx_rate = 0;	/* Disabled */
+	priv->bcast_tx_rate = 0;	/* Disabled */
 
 	/* initialize force reset */
 	priv->force_reset[IWL_RF_RESET].reset_duration =
