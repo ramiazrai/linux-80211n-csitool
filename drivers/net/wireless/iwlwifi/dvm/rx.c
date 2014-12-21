@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright(c) 2003 - 2013 Intel Corporation. All rights reserved.
+ * Copyright(c) 2003 - 2014 Intel Corporation. All rights reserved.
  *
  * Portions of this file are derived from the ipw3945 project, as well
  * as portionhelp of the ieee80211 subsystem header files.
@@ -207,8 +207,7 @@ static int iwlagn_rx_pm_debug_statistics_notif(struct iwl_priv *priv,
 					     struct iwl_device_cmd *cmd)
 {
 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
-	u32 __maybe_unused len =
-		le32_to_cpu(pkt->len_n_flags) & FH_RSCSR_FRAME_SIZE_MSK;
+	u32 __maybe_unused len = iwl_rx_packet_len(pkt);
 	IWL_DEBUG_RADIO(priv, "Dumping %d bytes of unhandled "
 			"notification for PM_DEBUG_STATISTIC_NOTIFIC:\n", len);
 	iwl_print_hex_dump(priv, IWL_DL_RADIO, pkt->data, len);
@@ -466,7 +465,7 @@ static int iwlagn_rx_statistics(struct iwl_priv *priv,
 	const int reg_recalib_period = 60;
 	int change;
 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
-	u32 len = le32_to_cpu(pkt->len_n_flags) & FH_RSCSR_FRAME_SIZE_MSK;
+	u32 len = iwl_rx_packet_payload_len(pkt);
 	__le32 *flag;
 	struct statistics_general_common *common;
 	struct statistics_rx_non_phy *rx_non_phy;
@@ -475,8 +474,6 @@ static int iwlagn_rx_statistics(struct iwl_priv *priv,
 	struct statistics_rx_phy *rx_cck;
 	struct statistics_tx *tx;
 	struct statistics_bt_activity *bt_activity;
-
-	len -= sizeof(struct iwl_cmd_header); /* skip header */
 
 	IWL_DEBUG_RX(priv, "Statistics notification received (%d bytes).\n",
 		     len);
