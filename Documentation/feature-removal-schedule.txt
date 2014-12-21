@@ -579,7 +579,7 @@ Why:	KVM tracepoints provide mostly equivalent information in a much more
 ----------------------------
 
 What:	at91-mci driver ("CONFIG_MMC_AT91")
-When:	3.7
+When:	3.8
 Why:	There are two mci drivers: at91-mci and atmel-mci. The PDC support
 	was added to atmel-mci as a first step to support more chips.
 	Then at91-mci was kept only for old IP versions (on at91rm9200 and
@@ -624,5 +624,16 @@ Why:	New drivers should use new V4L2_CAP_VIDEO_M2M capability flag
 	devices is ambiguous and may lead, for example, to identifying
 	a M2M device as a video	capture or output device.
 Who:	Sylwester Nawrocki <s.nawrocki@samsung.com>
+
+----------------------------
+
+What:	OMAP private DMA implementation
+When:	2013
+Why:	We have a DMA engine implementation; all users should be updated
+	to use this rather than persisting with the old APIs.  The old APIs
+	block merging the old DMA engine implementation into the DMA
+	engine driver.
+Who:	Russell King <linux@arm.linux.org.uk>,
+	Santosh Shilimkar <santosh.shilimkar@ti.com>
 
 ----------------------------
