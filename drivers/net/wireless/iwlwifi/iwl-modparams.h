@@ -94,7 +94,6 @@ enum iwl_power_level {
  * @amsdu_size_8K: enable 8K amsdu size, default = 0
  * @connector_log: which connector messages, default = 0
  * @restart_fw: restart firmware, default = 1
- * @plcp_check: enable plcp health check, default = true
  * @wd_disable: enable stuck queue check, default = 0
  * @bt_coex_active: enable bt coex, default = true
  * @led_mode: system default, default = 0
@@ -102,8 +101,6 @@ enum iwl_power_level {
  * @power_level: power level, default = 1
  * @debug_level: levels are IWL_DL_*, default = IWL_DL_FW_ERRORS
  * @ant_coupling: antenna coupling in dB, default = 0
- * @bt_ch_announce: BT channel inhibition, default = enable
- * @auto_agg: enable agg. without check, default = true
  */
 struct iwl_mod_params {
 	int sw_crypto;
@@ -111,16 +108,16 @@ struct iwl_mod_params {
 	int amsdu_size_8K;
 	bool restart_fw;
 	int connector_log;
-	bool plcp_check;
 	int  wd_disable;
 	bool bt_coex_active;
 	int led_mode;
 	bool power_save;
 	int power_level;
+#ifdef CONFIG_IWLWIFI_DEBUG
 	u32 debug_level;
+#endif
 	int ant_coupling;
-	bool bt_ch_announce;
-	bool auto_agg;
+	char *nvm_file;
 };
 
 #endif /* #__iwl_modparams_h__ */
