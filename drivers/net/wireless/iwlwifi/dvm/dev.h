@@ -772,6 +772,7 @@ struct iwl_priv {
 
 	struct iwl_rx_phy_res last_phy_res;
 	u8 last_cfg_phy_buf[IWLAGN_MAX_CFG_PHY_CNT*sizeof(u32)];
+	u32 ampdu_ref;
 	bool last_phy_res_valid;
 
 	/*

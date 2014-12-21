@@ -677,6 +677,7 @@ static int iwlagn_rx_reply_rx_phy(struct iwl_priv *priv,
 	struct iwl_rx_phy_res *rx_phy_res = (void *)pkt->data;
 
 	priv->last_phy_res_valid = true;
+	priv->ampdu_ref++;
 	memcpy(&priv->last_phy_res, pkt->data,
 	       sizeof(struct iwl_rx_phy_res));
 	memcpy(&priv->last_cfg_phy_buf, rx_phy_res->cfg_phy_buf,
@@ -994,6 +995,16 @@ static int iwlagn_rx_reply_rx(struct iwl_priv *priv,
 	/* set the preamble flag if appropriate */
 	if (phy_res->phy_flags & RX_RES_PHY_FLAGS_SHORT_PREAMBLE_MSK)
 		rx_status.flag |= RX_FLAG_SHORTPRE;
+
+	if (phy_res->phy_flags & RX_RES_PHY_FLAGS_AGG_MSK) {
+		/*
+		 * We know which subframes of an A-MPDU belong
+		 * together since we get a single PHY response
+		 * from the firmware for all of them
+		 */
+		rx_status.flag |= RX_FLAG_AMPDU_DETAILS;
+		rx_status.ampdu_reference = priv->ampdu_ref;
+	}
 
 	/* Set up the HT phy flags */
 	if (rate_n_flags & RATE_MCS_HT_MSK)
