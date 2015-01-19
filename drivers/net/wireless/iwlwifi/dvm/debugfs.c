@@ -2382,7 +2382,7 @@ static ssize_t iwl_dbgfs_bf_flag_write(struct file *file,
 	if (copy_from_user(buf, user_buf, count))
 		return -EFAULT;
 
-	ret = strict_strtoul(buf, 0, &val);
+	ret = kstrtoul(buf, 0, &val);
 	if (ret)
 		return ret;
 
@@ -2424,7 +2424,7 @@ static ssize_t iwl_dbgfs_rx_chains_msk_write(struct file *file,
 	if (copy_from_user(buf, user_buf, count))
 		return -EFAULT;
 
-	ret = strict_strtoul(buf, 0, &val);
+	ret = kstrtoul(buf, 0, &val);
 	if (ret)
 		return ret;
 
@@ -2483,7 +2483,7 @@ static ssize_t iwl_dbgfs_rotate_rates_write(struct file *file,
 	if (copy_from_user(buf, user_buf, count))
 		return -EFAULT;
 
-	ret = strict_strtoul(buf, 0, &val);
+	ret = kstrtoul(buf, 0, &val);
 	if (ret)
 		return ret;
 
@@ -2616,7 +2616,7 @@ static ssize_t iwl_dbgfs_monitor_tx_rate_write(struct file *file,
 	if (copy_from_user(buf, user_buf, count))
 		return -EFAULT;
 
-	ret = strict_strtoul(buf, 0, &val);
+	ret = kstrtoul(buf, 0, &val);
 	if (ret)
 		return ret;
 
@@ -2655,7 +2655,7 @@ static ssize_t iwl_dbgfs_bcast_tx_rate_write(struct file *file,
 	if (copy_from_user(buf, user_buf, count))
 		return -EFAULT;
 
-	ret = strict_strtoul(buf, 0, &val);
+	ret = kstrtoul(buf, 0, &val);
 	if (ret)
 		return ret;
 
