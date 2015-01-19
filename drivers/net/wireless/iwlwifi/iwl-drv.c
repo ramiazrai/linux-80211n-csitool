@@ -1258,6 +1258,7 @@ struct iwl_mod_params iwlwifi_mod_params = {
 	.debug_level = IWL_DL_FW_ERRORS,
 #endif
 	.wd_disable = true,
+	.uapsd_disable = false,
 	/* the rest are 0 by default */
 };
 IWL_EXPORT_SYMBOL(iwlwifi_mod_params);
@@ -1374,6 +1375,10 @@ MODULE_PARM_DESC(wd_disable,
 
 module_param_named(nvm_file, iwlwifi_mod_params.nvm_file, charp, S_IRUGO);
 MODULE_PARM_DESC(nvm_file, "NVM file name");
+
+module_param_named(uapsd_disable, iwlwifi_mod_params.uapsd_disable,
+		   bool, S_IRUGO);
+MODULE_PARM_DESC(uapsd_disable, "disable U-APSD functionality (default: N)");
 
 /*
  * set bt_coex_active to true, uCode will do kill/defer
