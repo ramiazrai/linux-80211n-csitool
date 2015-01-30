@@ -46,7 +46,7 @@
 <p>Here, you can see a list of all the MAC addresses this machine knows. My machine is in client node, so I will only see the MAC address for the AP. Inside that directory is a wide variety of useful info. I'll leave it up to the reader to explore. For now, let's focus on the <tt>rate_scale_table</tt> entry.</p>
 
 <pre>
-% sudo cat /sys/kernel/debug/ieee80211/phy0/stations/00:0f:34:9d:01:a0/rate_scale_table  
+% sudo cat /sys/kernel/debug/ieee80211/phy0/stations/00:0f:34:9d:01:a0/rate_scale_table
 sta_id 0
 failed=0 success=0 rate=0FFF
 fixed rate 0x0
@@ -121,7 +121,7 @@ Start idx [0]=0x0 [1]=0x0 [2]=0x0 [3]=0x0
            0x4000        (RATE_MCS_ANT_A_MSK = 0x4000)
          | 0x0200        (RATE_MCS_CCK_MSK = 0x200)
          | 0x000A        (10  &lt;&ndash;&gt;  1 Mbps)
-</pre> 
+</pre>
 
 <p>For 802.11n (also called HT) rates, the rate_n_flags might look like this:</p>
 
@@ -141,7 +141,7 @@ Start idx [0]=0x0 [1]=0x0 [2]=0x0 [3]=0x0
 
 <pre>
 % sudo -s
-# echo 0x4214 &gt; /sys/kernel/debug/<b>...</b>/rate_scale_table  
+# echo 0x4214 &gt; /sys/kernel/debug/<b>...</b>/rate_scale_table
 </pre>
 
 <p>This should set the AP to use the 2 Mbps rate instead, since <tt>0x14</tt> equals 20.</p>
@@ -200,7 +200,7 @@ csi_trace = read_bf_file('sample_data/log.all_csi.6.7.6');
 <pre>
 &gt;&gt; csi_entry = csi_trace{1}	<b>(Note the curly-braces {}, not parentheses ().)</b>
 
-csi_entry = 
+csi_entry =
 
     timestamp_low: 0
        bfee_count: 72
@@ -282,7 +282,7 @@ ans =
 <pre>
 &gt;&gt; csi_entry = csi_trace{20}
 
-csi_entry = 
+csi_entry =
 
     timestamp_low: 0
        bfee_count: 91
@@ -399,6 +399,25 @@ ans =
 
 	<p>First, please read #5 &ndash; "For which packets is CSI measured?". Hopefully, this description will make it clear why you are unlikely to ever get many good measurements in traditional AP/client networks.</p>
 	<p>We recommend that you use injection mode for most multi-link measurements. Please see the instructions <a href="https://github.com/dhalperi/linux-80211n-csitool-supplementary/tree/master/injection">here</a>.</p>
+</div>
+
+<!--- ********************************************************************* -->
+<H3 id="logging">12. Can I log other information like payloads or sequence numbers for received packets? [<a href="javascript:void(0);" onclick="toggle(this, 'loggingfold');">+</a>] </H3>
+
+<div id="loggingfold" style="display:none;">
+  <p>First, please read #5 &ndash; "For which packets is CSI measured?". This answer provides useful background for understanding the relationship and interleaving between CSI measurements and other logs.</p>
+  <p>You can find the information that may be logged by looking at the <a href="https://github.com/dhalperi/linux-80211n-csitool/blob/f3dba8bb3aac341fa1ffcae7c5d6815182493a5d/drivers/net/wireless/iwlwifi/iwl-connector.h#L62"><code>iwl-connector.h</code> header file</a> in the driver folder. Each of these flags may be set to relay one or more types of messages from the kernel to userspace programs like <code>log_to_file</code>.</p>
+  <p>The default setting is <code>IWL_CONN_BFEE_NOTIF_MSK</code> -- the beamforming information feedback is logged. Other options:</p>
+  <ul>
+    <li>Enabling <code>IWL_CONN_RX_PHY_MSK</code> will log additional physical information. However, we already copy the most relevant information from this structure into the beamforming response (<a href="https://github.com/dhalperi/linux-80211n-csitool/blob/f3dba8bb3aac341fa1ffcae7c5d6815182493a5d/drivers/net/wireless/iwlwifi/iwl-agn-lib.c#L59">see code here</a>).</li>
+    <li>Enabling <code>IWL_CONN_RX_MPDU_MSK</code> will log packet payloads. This message should include, e.g., the IEEE 802.11 sequence number and of course packet payload which you could use for application or measurement-specific purposes.</li>
+    <li>... other masks log other information, which it will benefit you the user to discover by reading the kernel. :)</li>
+  </ul>
+  <p><strong>To set which information is logged</strong>, please set the mask to the union of all information you require to be logged. For example, to log both CSI measurements and packet payloads, the mask would be <code>IWL_CONN_BFEE_NOTIF_MSK | IWL_CONN_RX_MPDU_MSK</code>, or <code>0x5</code>. Once you know the desired mask, you would set it by (re-)loading the <code>iwlwifi</code> module with the <code>connector_log</code> flag set:</p>
+<pre>
+modprobe iwlwifi connector_log=0x5
+</pre>
+<p>The default value for <code>connector_log</code> is <code>0</code>, and the recommended value in the <a href="installation.html">installation instructions</a> is <code>0x1</code>, which only logs beamforming information.</p>
 </div>
 
 <!--- ********************************************************************* -->
