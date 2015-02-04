@@ -411,7 +411,7 @@ modprobe iwlwifi connector_log=0x5
 
 <p>These modes require beaconing, which cannot be performed by this adapter on channels where radar detection is required (since it is not implemented). The regulations for specific channels, including whether radar detection is required, vary by country.</p>
 
-<p>First, make sure that the regulatory domain is set in the kernel, so that it is <a href="http://wireless.kernel.org/en/developers/Regulatory/processing_rules#Hidden_SSIDs">not world roaming</a>.</p>
+<p>First, make sure that the regulatory domain is set in the kernel, so that it is <a href="https://wireless.wiki.kernel.org/en/developers/Regulatory/processing_rules#hidden_ssids">not world roaming</a>.</p>
 
 <p>The adapter's EEPROM also contains regulatory settings for each channel, which might be more or less restrictive than the actual regulations where you are operating. The firmware reads and uses the regulatory settings directly from the EEPROM. The driver reads the settings from the EEPROM and combines them with the regulatory data used by the kernel; to examine the result:</p>
 <pre>
