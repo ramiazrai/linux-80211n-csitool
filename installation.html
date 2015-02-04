@@ -9,192 +9,121 @@
 
 <center>
 	<H1>Linux 802.11n CSI Tool</H1>
-	<H4><a href="index.html">Main Page</a> | <a href="https://github.com/dhalperi/linux-80211n-csitool-supplementary/blob/master/CONTRIBUTING.md">Get Help</a><br>
-	<a href="https://github.com/dhalperi/linux-80211n-csitool/">GitHub</a> | <a href="faq.html">FAQ</a></H4>
+	<H4><a href="https://github.com/dhalperi/linux-80211n-csitool/">GitHub</a> | <a href="index.html">Main Page</a> |
+	<a href="faq.html">FAQ</a> | <a href="https://github.com/dhalperi/linux-80211n-csitool-supplementary/blob/master/CONTRIBUTING.md">Get Help</a></H4>
 </center>
-
-<!--- ********************************************************************* -->
-
-<H2><font color="red">Note</font></H2>
-
-<p><strong><font color="red">As of 28 September 2012, this tool is going into <em>stable maintainence mode</em>. This means that we will no longer be tracking the active Linux tree, instead following the stable Linux tree on revision 3.5.</font></strong></p>
 
 <!--- ********************************************************************* -->
 
 <H2>Installation Instructions</H2>
 
-<!--- ********************************************************************* -->
-<H4>1. Install Ubuntu Linux</H4>
-
-<p>Our testbed runs 32-bit (a.k.a. x86) Ubuntu Linux, version 10.04LTS of the
-Server Edition. You can obtain it from the Ubuntu website, <a href="http://releases.ubuntu.com/lucid/">here</a>. [Direct link to: <a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.4-server-i386.iso">ISO</a> | <a href="http://releases.ubuntu.com/lucid/ubuntu-10.04.4-server-i386.iso.torrent">Torrent</a>]</p>
-<p>You are of course free to use any flavor/version of Linux that you choose, but if you have issues, this is the only version of Linux we will support.</p>
+<p><em>The instructions below have been updated to simplify the installation process and to work with newer Linux releases. You can also refer to the <a href="old_installation.html">old installation instructions</a>.</em></p>
 
 <!--- ********************************************************************* -->
-<H4>1a. (Optional) Configure Ubuntu for Kernel Development</H4>
+<H3>1. Prerequisites</H3>
 
-<p>If you are scripting commands you can either <tt>setuid</tt> them or you can just disable password checks for <tt>sudo</tt>.  I prefer the latter, it comes in handy more and requires less manual effort.  But, install your security patches.</p>
+<p>Install the build tools, the Linux kernel development headers, and the Git client. Using Ubuntu:</p>
 <pre>
-sudo visudo
-# change
-# %admin ALL=(ALL) ALL
-# to
-# %admin ALL=NOPASSWD: ALL
+sudo apt-get install gcc make linux-headers-$(uname -r) git-core
 </pre>
 
-<p>If you are planning on modifying the driver and other parts of the wireless network stack, you'll want to make sure the modules aren't autoloaded.  This way, when you crash the machine, it'll stay up when it reboots!</p>
+<p><em>Optional:</em> If you plan to set up the wireless interface with command line utilities such as <em>iw</em>, you need to disable <em>NetworkManager</em> from controlling the interface (if it is installed). Using Ubuntu:</p>
 <pre>
-sudo vim /etc/modprobe.d/blacklist.conf
-# Add this:
-	# blacklist modules under active development
-	blacklist iwlwifi
-	blacklist mac80211
-	blacklist cfg80211
+sudo apt-get install iw
+echo iface wlan0 inet manual | sudo tee -a /etc/network/interfaces
+sudo restart network-manager
+</pre>
+
+<p><em>Tip:</em> You might want to prevent the wireless driver from automatically loading during boot&mdash;for example, if you make additional modifications to it that could crash the kernel. To do this, run:</p>
+<pre>
+echo blacklist iwldvm | sudo tee -a /etc/modprobe.d/csitool.conf
+echo blacklist iwlwifi | sudo tee -a /etc/modprobe.d/csitool.conf
 </pre>
 
 <!--- ********************************************************************* -->
-<H4>2. Install necessary packages on Ubuntu</H4>
+<H3>2. Build and Install the Modified Wireless Driver</H3>
 
-<p>These are for ensuring you can compile and install our modified Linux kernel.</p>
+<p>Obtain the CSI Tool Linux source tree, and checkout the tag for your kernel version:</p>
 <pre>
-sudo apt-get -y install git-core kernel-package fakeroot build-essential ncurses-dev
+CSITOOL_KERNEL_TAG=csitool-$(uname -r | cut -d . -f 1-2)
+git clone git://github.com/dhalperi/linux-80211n-csitool.git
+cd linux-80211n-csitool
+git checkout ${CSITOOL_KERNEL_TAG}
 </pre>
 
-<p>These are for compiling our userspace tools.</p>
+<p><em>Tip:</em> You can merge the driver modifications into the source tree for your specific kernel version, which might resolve build errors or improve compatibility. Using Ubuntu:</p>
 <pre>
-sudo apt-get -y install libnl-dev libssl-dev	# Install some necessary libraries
+UBUNTU_KERNEL_TAG=Ubuntu-3.13.0-32.57
+# Modify the line above with your Ubuntu kernel tag. First, determine your full kernel
+# version by reading /proc/version_signature; then, look up the Ubuntu kernel tag at:
+# http://people.canonical.com/~kernel/info/kernel-version-map.html
+
+. /etc/lsb-release
+git remote add ubuntu git://kernel.ubuntu.com/ubuntu/ubuntu-${DISTRIB_CODENAME}.git
+git pull --no-edit ubuntu ${UBUNTU_KERNEL_TAG}
 </pre>
 
-<p><tt>iw</tt> is the new <tt>iwconfig</tt>. You need it to do things like enable monitor mode and 40 MHz channels from the command line.</p>
-
+<p>Build the modified driver for the existing kernel:</p>
 <pre>
-sudo apt-get -y install iw
+make -C /lib/modules/$(uname -r)/build M=$(pwd)/drivers/net/wireless/iwlwifi modules
+</pre>
+
+<p>Install the modified driver into the module updates directory:</p>
+<pre>
+sudo make -C /lib/modules/$(uname -r)/build M=$(pwd)/drivers/net/wireless/iwlwifi INSTALL_MOD_DIR=updates \
+    modules_install
+sudo depmod
+cd ..
 </pre>
 
 <!--- ********************************************************************* -->
-<H4>3. Download, configure, compile, and install our custom Linux kernel</H4>
+<H3>3. Install the Modified Firmware</H3>
 
-<p>We have moved the hosting of our custom kernel to <a href="http://www.github.com">GitHub</a>.  This is a surprisingly great, easy-to-use site.</p>
-
-<p>First, we fetch the code. We also fetch supplemental files such as custom firmware, userspace tools, and MATLAB scripts.</p>
+<p>Obtain the CSI Tool supplementary material:</p>
 <pre>
-git clone -b csitool-stable git://github.com/dhalperi/linux-80211n-csitool.git
 git clone git://github.com/dhalperi/linux-80211n-csitool-supplementary.git
 </pre>
 
-<p>Next, we configure the kernel. We offer two options for how this can be done. V1: This version uses our optimized kernel config. It compiles very fast and
-has a lot of Linux cruft removed, but it may take a few tries to get it working
-for all the hardware on your system.</p>
-
+<p>Relocate any existing firmware for Intel Wi-Fi Link 5000 Series adapters:</p>
 <pre>
-cd linux-80211n-csitool			# Go into the kernel src directory
-make oldconfig				# Use our optimized kernel config
-make menuconfig				# Enable your system-specific hardware
+for file in /lib/firmware/iwlwifi-5000-*.ucode; do sudo mv $file $file.orig; done
 </pre>
 
-<p>V2. This method uses the Ubuntu default config, which is designed to work on any system but generates a very large kernel image and takes much longer to compile.</p>
-
+<p>Install the modified firmware:</p>
 <pre>
-cp /boot/config-`uname -r` .config
-make oldconfig
-</pre>
-
-<p>Now it's time to compile, and finally install the kernel.</p>
-
-<pre>
-make -j3 bzImage modules		# -j3 here is 3-way parallelism, try #cores+1
-sudo make install modules_install	# INSTALL
-sudo mkinitramfs -o /boot/initrd.img-`cat include/config/kernel.release` \
-	`cat include/config/kernel.release`	# create ramdisk used to boot
-sudo update-grub			# Only needed the first time for a new version
-</pre>
-
-<p>Next we install the Linux kernel-headers.  The userspace utilities that log the CSI reported by the NIC need this to function.</p>
-
-<pre>
-make headers_install	# creates a copy of the linux-headers in ./usr/include/
-sudo mkdir /usr/src/linux-headers-`cat include/config/kernel.release`
-sudo cp -rf usr/include /usr/src/linux-headers-`cat include/config/kernel.release`/include
-</pre>
-
-<p>Finally, <b>reboot</b> into your new kernel.  If you have issues booting, boot back into the previous kernel and then look into your kernel config.</p>
-
-<!--- ********************************************************************* -->
-<H4>4. Install our custom firmware.</H4>
-
-<p>The firmware is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/firmware/</tt>.</p>
-
-<pre>
-# backup original firmware, good for reference
-sudo cp /lib/firmware/iwlwifi-5000-2.ucode /lib/firmware/iwlwifi-5000-2.ucode.orig
-sudo mv /lib/firmware/iwlwifi-5000-5.ucode /lib/firmware/iwlwifi-5000-5.ucode.orig
-# copy ours in separately, keeping name for reference
-sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/
-# install ours
-sudo cp iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/iwlwifi-5000-2.ucode
+sudo cp linux-80211n-csitool-supplementary/firmware/iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/
+sudo ln -s iwlwifi-5000-2.ucode.sigcomm2010 /lib/firmware/iwlwifi-5000-2.ucode
 </pre>
 
 <!--- ********************************************************************* -->
-<H4>5. Download and compile hostap.</H4>
+<H3>4. Build the Userspace Logging Tool</H3>
 
-<p>At the time of writing, hostap 0.7 is the stable version.</p>
+<p>Build <em>log_to_file</em>, a command line tool that writes CSI obtained via the driver to a file:</p>
 
 <pre>
-cd						# Back out of the kernel tree
-git clone git://w1.fi/srv/git/hostap-07.git	# Get the code
-cd hostap-07/hostapd
-cp &lt;hostap-dotconfig&gt; .config			# Our hostap config from linux-80211n-csitool-supplementary/hostap-config-files/
-make
-cp &lt;hostapd.conf-test&gt; hostapd.conf		# Install the vanilla hostap conf we provide
+make -C linux-80211n-csitool-supplementary/netlink
 </pre>
 
 <!--- ********************************************************************* -->
-<H4>6. Install the userspace logging utility.</H4>
+<H3>5. Enable Logging and Test</H3>
 
-<p>The userspace netlink tool that logs CSI is located in the supplementary material git at <tt>linux-80211n-csitool-supplementary/netlink/</tt>.</p>
-
-<pre>
-cd ~/linux-80211n-csitool-supplementary/netlink		# We assume you install into your home directory
-make							# hopefully the make succeeds!
-# If not, figure out why it didn't compile. Did you install the Linux headers above?
-</pre>
-
-<!--- ********************************************************************* -->
-<H4>7. Let's try it out!</H4>
-
-<p>First we'll test that <tt>hostap</tt> is working.</p>
+<p>Unload the driver, then reload it with CSI logging enabled:</p>
 
 <pre>
-sudo modprobe iwlwifi   # did it work?  Do you see logs about iwlwifi in the dmesg?
-sudo iwlist scanning    # did it work?  Did you get access points?
-sudo ~/hostap-07/hostapd/hostapd ~/hostap-07/hostapd/hostapd.conf
-# did it work? if you're in a busy network you should see probe requests going by
-# also, go to a machine you control and scan
-# go to a machine you control and associate sudo iwconfig wlan0 essid csitool-test
-# ... etc
+sudo modprobe -q -r iwldvm iwlwifi mac80211
+sudo modprobe iwlwifi connector_log=0x1
 </pre>
 
-<p>Make sure to kill <tt>hostapd</tt> when you're done. Then put 802.11n-enabled <tt>hostapd</tt> config file in place:</p>
+<p>Connect to an 802.11n access point&mdash;using <em>iw</em> and <em>iproute2</em>, for example (or <em>NetworkManager</em>). Alternatively, let your system operate as an 802.11n access point by installing and configuring <em>hostapd</em> (sample configurations are in the supplementary material), then connect a station to it.</p>
 
+<p>Once you are connected, begin logging CSI to a file:</p>
 <pre>
-cp &lt;hostapd.conf-real&gt; hostapd.conf		# Install the real hostap conf we provide
+sudo linux-80211n-csitool-supplementary/netlink/log_to_file csi.dat
 </pre>
 
-<p>Now let's try logging some beamforming information, i.e., CSI!</p>
-<pre>
-sudo rmmod iwlwifi mac80211 cfg80211			# remove the modules
-sudo modprobe iwlwifi connector_log=0x1			# load the modules and set userspace beamforming logging
-&lt;first, associate and set up IP to an AP that will send you HT packets&gt;
-cd ~/linux-80211n-csitool-supplementary/netlink
-sudo ./log_to_file tmp.dat
-</pre>
-<p>In a different terminal, start pinging the access point</p>
-<pre>
-ping &lt;AP IP address&gt;
-</pre>
-<p>By pinging the AP (make sure the pings are answered!), you are starting traffic flow between your client and AP. Intel has programmed its drivers to start in Legacy (802.11a/g) mode, thus the first pings will be sent at the 1Mbps or 6Mbps rate. For legacy rates, CSI will not be measured.</p>
+<p>At a different terminal, run the <em>ping</em> command with the IP address of the access point (or the connected station). If replies are sent back at High Throughput (802.11n) bitrates, <em>log_to_file</em> will write the CSI for each received packet to the file, and also print a message to the terminal. Note that depending on the rate selection algorithm, the first few packets are typically sent at Legacy (802.11a/b/g) bitrates instead of High Throughput bitrates; these will not provide CSI.</p>
 
-<p>After a few dozen pings, the rate selection should automatically switch to HT (802.11n) bitrates. At this point, <tt>log_to_file</tt> will start recording packets and the <tt>iwlwifi</tt> driver will print messages in the kernel syslog.</p>
+<p>Make sure to see the <a href="faq.html">FAQ</a> for more details about collecting CSI.</p>
 
 <!--- ********************************************************************* -->
 
