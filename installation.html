@@ -76,6 +76,8 @@ sudo depmod
 cd ..
 </pre>
 
+<p><em>Tip:</em> If the message "<tt>Can't read private key</tt>" appears, it indicates the module could not be signed. This will not cause a problem unless the kernel enforces module signature verification (later).</p>
+
 <!--- ********************************************************************* -->
 <H3>3. Install the Modified Firmware</H3>
 
@@ -113,6 +115,8 @@ make -C linux-80211n-csitool-supplementary/netlink
 sudo modprobe -q -r iwldvm iwlwifi mac80211
 sudo modprobe iwlwifi connector_log=0x1
 </pre>
+
+<p><em>Tip:</em> If the message "<tt>module verification failed: signature and/or required key missing</tt>" appears, you will first need to disable <a href="https://wiki.ubuntu.com/SecurityTeam/SecureBoot">Secure Boot</a> and/or add the <a href="https://wiki.ubuntu.com/Kernel/KernelBootParameters">kernel boot parameter</a> "<tt>enforcemodulesig=0</tt>".</p>
 
 <p>Connect to an 802.11n access point&mdash;using <em>iw</em> and <em>iproute2</em>, for example (or <em>NetworkManager</em>). Alternatively, let your system operate as an 802.11n access point by installing and configuring <em>hostapd</em> (sample configurations are in the supplementary material), then connect a station to it.</p>
 
