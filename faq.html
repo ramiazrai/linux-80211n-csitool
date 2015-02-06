@@ -463,6 +463,14 @@ Wiphy phy0
 </div>
 
 <!--- ********************************************************************* -->
+<H3 id="modulesig">14. Why does "module verification failed: signature and/or required key missing" appear? [<a href="javascript:void(0);" onclick="toggle(this, 'modulesigfold');">+</a>] </H3>
+
+<div id="modulesigfold" style="display:none;">
+
+<p>This will occur if the module was not signed during installation, and if the kernel is configured to enforce module signature verification. To work around this, you will need to disable <a href="https://wiki.ubuntu.com/SecurityTeam/SecureBoot">Secure Boot</a> and/or add a <a href="https://wiki.ubuntu.com/Kernel/KernelBootParameters">kernel boot parameter</a>: <tt>enforcemodulesig=0</tt></p>
+</div>
+
+<!--- ********************************************************************* -->
 <center>
 	<H4><a href="index.html">Back to the main page</a></H4>
 </center>
