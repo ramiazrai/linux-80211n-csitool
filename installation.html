@@ -109,10 +109,21 @@ make -C linux-80211n-csitool-supplementary/netlink
 <!--- ********************************************************************* -->
 <H3>5. Enable Logging and Test</H3>
 
-<p>Unload the driver, then reload it with CSI logging enabled:</p>
+<p>Unload the driver:</p>
 
 <pre>
-sudo modprobe -q -r iwldvm iwlwifi mac80211
+sudo modprobe -r iwlwifi mac80211
+</pre>
+
+<p><em>Tip:</em> On distributions other than Ubuntu, you may see the message "<tt>FATAL: Module iwlwifi is in use.</tt>" when you try to unload the driver. If this occurs, use the following command instead:</p>
+
+<pre>
+sudo modprobe -r iwldvm iwlwifi mac80211
+</pre>
+
+<p>Once the driver is unloaded, reload it with CSI logging enabled:</p>
+
+<pre>
 sudo modprobe iwlwifi connector_log=0x1
 </pre>
 
