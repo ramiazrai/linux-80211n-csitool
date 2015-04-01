@@ -182,7 +182,7 @@ csi_trace = read_bf_file('sample_data/log.all_csi.6.7.6');
 
 csi_entry =
 
-    timestamp_low: 0
+    timestamp_low: 4
        bfee_count: 72
               Nrx: 3
               Ntx: 1
@@ -244,7 +244,7 @@ csi_entry =
 
 ans =
 
-       Inf       Inf       Inf       Inf
+   22.1821   22.2698   22.9007   24.6297
  -156.5356 -156.5356 -156.5356 -156.5356
  -156.5356 -156.5356 -156.5356 -156.5356
  -156.5356 -156.5356 -156.5356 -156.5356
@@ -264,7 +264,7 @@ ans =
 
 csi_entry =
 
-    timestamp_low: 0
+    timestamp_low: 4
        bfee_count: 91
               Nrx: 3
               Ntx: 3
@@ -282,13 +282,13 @@ csi_entry =
 
 ans =
 
-       Inf       Inf       Inf       Inf
-       Inf       Inf       Inf       Inf
-       Inf       Inf       Inf       Inf
-       Inf       Inf       Inf   39.0068
-       Inf       Inf   38.1400   38.2261
-       Inf       Inf   35.3323   35.4946
-   13.9454   14.5517   17.1716   20.7060
+       Inf       Inf   32.3435   32.6069
+       Inf       Inf   32.4238   32.6822
+       Inf       Inf   32.2353   32.5051
+   25.4763   25.5262   25.8974   26.8482
+   24.6893   24.7490   25.1933   26.5660
+   21.9185   22.0303   22.8060   24.6483
+    6.5818    8.2321   12.4185   16.2016
 </pre>
 
 <p>Here, all 7 rows are valid because there are three transmit antennas. We see that all the SIMO streams are still very likely to work, as well as the MIMO2 transmissions, but only some of the MIMO3 rates will work. See our SIGCOMM 2010 paper for more details.</p>
