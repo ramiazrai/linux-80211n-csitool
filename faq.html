@@ -182,7 +182,7 @@ csi_trace = read_bf_file('sample_data/log.all_csi.6.7.6');
 
 csi_entry =
 
-    timestamp_low: 4
+    timestamp_low: 4            <b>(In the sample trace, timestamp_low is invalid and always 4.)</b>
        bfee_count: 72
               Nrx: 3
               Ntx: 1
@@ -199,7 +199,7 @@ csi_entry =
 <p>Let's break down this display:</p>
 
 <ul>
-	<li><b><tt>timestamp_low</tt></b> is the low 32 bits of the NIC's 1 MHz clock. It wraps about every 4300 seconds, or 72 minutes. This field was not yet recorded in the sample trace, so all values will be zero.</li>
+	<li><b><tt>timestamp_low</tt></b> is the low 32 bits of the NIC's 1 MHz clock. It wraps about every 4300 seconds, or 72 minutes. This field was not yet recorded in the sample trace, so all values are arbitrary and always equal <code>4</code>.</li>
 	<li><b><tt>bfee_count</tt></b> is simply a count of the total number of beamforming measurements that have been recorded by the driver and sent to userspace. The <tt>netlink</tt> channel between the kernel and userspace is lossy, so these can be used to detect measurements that were dropped in this pipe.</li>
 	<li><b><tt>Nrx</tt></b> represents the number of antennas used to receive the packet by this NIC, and <b><tt>Ntx</tt></b> represents the number of space/time streams transmitted. In this case, the sender sent a single-stream packet and the receiver used all 3 antennas to receive it.</li>
 	<li><b><tt>rssi_a</tt></b>, <b><tt>rssi_b</tt></b>, and <b><tt>rssi_c</tt></b> correspond to RSSI measured by the receiving NIC at the input to each antenna port. This measurement is made during the packet preamble. This value is in <tt>dB</tt> relative to an internal reference; to get the received signal strength in <tt>dBm</tt> we must combine it with the Automatic Gain Control (AGC) setting (<b><tt>agc</tt></b>) in <tt>dB</tt> and also subtract off a magic constant. This process is explained below.</li>
