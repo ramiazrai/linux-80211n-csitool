@@ -321,9 +321,11 @@ sudo restart network-manager
 <ul>
 	<li><p>The packet is transmitted using an 802.11n "HT" rate.</p></li>
   <li><p>The receiver's logical configuration (e.g., channel type is HT, and channel width) and its physical configuration (e.g., correct number of antennas connected, all antennas work in the configured band, all antennas are enabled in the firmware) support the transmitted rate.</p></li>
-  <li><p>The receiver decodes the packet correctly, with no errors.</p><p>AND one of:</p></li>
-	<li><p>The packet is from a client to its AP, or an AP to its client, OR</p></li>
-	<li><p>the packet is addressed both to and from a hardcoded, fixed address 00:16:ea:12:34:56, as part of a broadcast network. See the <a href="https://github.com/dhalperi/linux-80211n-csitool-supplementary/tree/master/injection">injection scripts</a>, using <code>mode 1</code> only.</p></li>
+  <li><p>The receiver decodes the packet correctly, with no errors.</p><p>AND depending on the mode:</p></li>
+	<li><p><em>Client mode:</em> The packet is transmitted by the connected AP, and the destination is either the local address or broadcast.</p></li>
+	<li><p><em>AP mode:</em> The packet is transmitted by a connected client.</p></li>
+	<li><p><em>IBSS (ad-hoc) mode:</em> The packet is transmitted by another station in the connected IBSS, and the destination is either the local address or broadcast.</p></li>
+	<li><p><em>Monitor mode:</em> The packet is addressed both to and from a hardcoded, fixed address 00:16:ea:12:34:56. See the <a href="https://github.com/dhalperi/linux-80211n-csitool-supplementary/tree/master/injection">injection scripts</a>, using <code>mode 1</code> only.</p></li>
 </ul>
 <p>In other words, CSI is <strong>not</strong> recorded for overheard 802.11n conversations. It is also not recorded for beacons from a connected AP if they are sent a non-HT rate (e.g., the 802.11a/g 6 Mbps rate). I also note that there is only one CSI measurement per 802.11n A-MPDU (aggregation batch) since there is really only "one" preamble.</p>
 </div>
