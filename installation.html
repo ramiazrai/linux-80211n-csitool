@@ -46,7 +46,7 @@ echo blacklist iwlwifi | sudo tee -a /etc/modprobe.d/csitool.conf
 <p>Obtain the CSI Tool Linux source tree, and checkout the tag for your kernel version:</p>
 <pre>
 CSITOOL_KERNEL_TAG=csitool-$(uname -r | cut -d . -f 1-2)
-git clone git://github.com/dhalperi/linux-80211n-csitool.git
+git clone https://github.com/dhalperi/linux-80211n-csitool.git
 cd linux-80211n-csitool
 git checkout ${CSITOOL_KERNEL_TAG}
 </pre>
@@ -83,7 +83,7 @@ cd ..
 
 <p>Obtain the CSI Tool supplementary material:</p>
 <pre>
-git clone git://github.com/dhalperi/linux-80211n-csitool-supplementary.git
+git clone https://github.com/dhalperi/linux-80211n-csitool-supplementary.git
 </pre>
 
 <p>Relocate any existing firmware for Intel Wi-Fi Link 5000 Series adapters:</p>
