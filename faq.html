@@ -205,7 +205,7 @@ csi_entry =
 	<li><b><tt>rssi_a</tt></b>, <b><tt>rssi_b</tt></b>, and <b><tt>rssi_c</tt></b> correspond to RSSI measured by the receiving NIC at the input to each antenna port. This measurement is made during the packet preamble. This value is in <tt>dB</tt> relative to an internal reference; to get the received signal strength in <tt>dBm</tt> we must combine it with the Automatic Gain Control (AGC) setting (<b><tt>agc</tt></b>) in <tt>dB</tt> and also subtract off a magic constant. This process is explained below.</li>
 	<li><b><tt>perm</tt></b> tells us how the NIC permuted the signals from the 3 receive antennas into the 3 RF chains that process the measurements. The sample value of <b><tt>[3 2 1]</tt></b> implies that Antenna C was sent to RF Chain A, Antenna B to Chain B, and Antenna A to Chain C. This operation is performed by an antenna selection module in the NIC and generally corresponds to ordering the antennas in decreasing order of RSSI.</li>
 	<li><b><tt>rate</tt></b> is the rate at which the packet was sent, in the same format as the <tt>rate_n_flags</tt> defined <a href="#faqrate">above</a>. Note that the antenna bits are omitted, as there is no way for the receiver to know which transmit antennas were used.</li>
-	<li><b><tt>csi</tt></b> is the CSI itself, normalized to an internal reference. It is a <tt><b>Ntx</b>&times;<b>Nrx</b>&times;30</tt> 3-D matrix where the third dimension is across 30 subcarriers in the OFDM channel. For a 20 MHz-wide channel, these correspond to about half the OFDM subcarriers, and for a 40 MHz-wide channel, this is about one in every 4 subcarriers. Which subcarriers were measured is defined by the <a href="http://standards.ieee.org/getieee802/download/802.11n-2009.pdf">802.11n standard (in Table 7-25f on page 50)</a>.</li>
+	<li><b><tt>csi</tt></b> is the CSI itself, normalized to an internal reference. It is a <tt><b>Ntx</b>&times;<b>Nrx</b>&times;30</tt> 3-D matrix where the third dimension is across 30 subcarriers in the OFDM channel. For a 20 MHz-wide channel, these correspond to about half the OFDM subcarriers, and for a 40 MHz-wide channel, this is about one in every 4 subcarriers. Which subcarriers were measured is defined by the <a href="http://standards.ieee.org/getieee802/download/802.11n-2009.pdf">IEEE 802.11n-2009 standard</a> (in Table 7-25f on page 50).</li>
 </ul>
 
 <p>Now that we've described all the fields of this struct, we need to put them all together to compute the CSI in absolute units, rather than Intel's internal reference level. In particular, we need to combine the RSSI and AGC values together to get RSS in <tt>dBm</tt>, and include noise to get SNR. If there is no noise, as in the sample case, we instead use a hard-coded noise floor of <tt>-92</tt> <tt>dBm</tt>. We use the script <tt>get_scaled_csi.m</tt> to do this:<p>
@@ -335,7 +335,7 @@ sudo restart network-manager
 
 <div id="subcarriersfold" style="display:none;">
 
-	<p>The set of subcarriers measured is specified by the IEEE 802.11n-2009 standard; see Table 7-25f. Intel's implementation only supports the versions that measure 30 subcarriers each, corresponding to <em>Ng</em> = 2 for 20 MHz and <em>Ng</em> = 4 for 40 MHz.</p>
+	<p>The set of subcarriers measured is specified by the <a href="http://standards.ieee.org/getieee802/download/802.11n-2009.pdf">IEEE 802.11n-2009 standard</a> (in Table 7-25f on page 50). Intel's implementation only supports the versions that measure 30 subcarriers each, corresponding to <em>Ng</em> = 2 for 20 MHz and <em>Ng</em> = 4 for 40 MHz.</p>
 </div>
 
 
