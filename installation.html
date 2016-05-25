@@ -17,25 +17,27 @@
 
 <H2>Installation Instructions</H2>
 
-<p><em>The instructions below have been updated to simplify the installation process and to work with newer Linux releases. You can also refer to the <a href="old_installation.html">old installation instructions</a>.</em></p>
+<p><em>These instructions are currently expected to work on Linux operating systems that are based on an upstream Linux kernel version between 3.2 (e.g. Ubuntu 12.04) and 4.2 (e.g. Ubuntu 14.04.4).</em></p>
+
+<p><em>An older version of this page, used with the original testbed at the University of Washington, is archived <a href="old_installation.html">here</a>.</em></p>
 
 <!--- ********************************************************************* -->
 <H3>1. Prerequisites</H3>
 
-<p>Install the build tools, the Linux kernel development headers, and the Git client. Using Ubuntu:</p>
+<p>Install the build tools, the Linux development headers, and the Git client. On Ubuntu, run:</p>
 <pre>
 sudo apt-get install gcc make linux-headers-$(uname -r) git-core
 </pre>
 
-<p><em>Optional:</em> If you plan to set up the wireless interface with command line utilities such as <em>iw</em>, you need to disable <em>NetworkManager</em> from controlling the interface (if it is installed). Using Ubuntu:</p>
-<pre>
+<p style="margin-left: 2em"><strong>Tip:</strong> To maintain greater control over the wireless interface during your experiments, you will likely want to configure it using command-line utilities such as <em>iw</em> and <em>iproute2</em>. If so, you first need to disable <em>NetworkManager</em> from controlling the wireless interface (if it is installed). On Ubuntu, run:</p>
+<pre style="margin-left: 2em">
 sudo apt-get install iw
 echo iface wlan0 inet manual | sudo tee -a /etc/network/interfaces
 sudo restart network-manager
 </pre>
 
-<p><em>Tip:</em> You might want to prevent the wireless driver from automatically loading during boot&mdash;for example, if you make additional modifications to it that could crash the kernel. To do this, run:</p>
-<pre>
+<p style="margin-left: 2em"><strong>Tip:</strong> If you want to prevent the wireless driver from automatically loading during boot (particularly if you are developing your own modifications to the driver), run:</p>
+<pre style="margin-left: 2em">
 echo blacklist iwldvm | sudo tee -a /etc/modprobe.d/csitool.conf
 echo blacklist iwlwifi | sudo tee -a /etc/modprobe.d/csitool.conf
 </pre>
@@ -43,7 +45,7 @@ echo blacklist iwlwifi | sudo tee -a /etc/modprobe.d/csitool.conf
 <!--- ********************************************************************* -->
 <H3>2. Build and Install the Modified Wireless Driver</H3>
 
-<p>Obtain the CSI Tool Linux source tree, and checkout the tag for your kernel version:</p>
+<p>Obtain the CSI Tool Linux source tree, which includes modifications to the wireless driver, and check out the appropriate tag in the repository for your <em>upstream</em> kernel version:</p>
 <pre>
 CSITOOL_KERNEL_TAG=csitool-$(uname -r | cut -d . -f 1-2)
 git clone https://github.com/dhalperi/linux-80211n-csitool.git
@@ -51,8 +53,8 @@ cd linux-80211n-csitool
 git checkout ${CSITOOL_KERNEL_TAG}
 </pre>
 
-<p><em>Tip:</em> You can merge the driver modifications into the source tree for your specific kernel version, which might resolve build errors or improve compatibility. Using Ubuntu:</p>
-<pre>
+<p style="margin-left: 2em"><strong>Tip:</strong> You can then merge these driver modifications into the Linux source tree for your <em>distribution-provided</em> kernel version, in order to improve compatibility. On Ubuntu, run:</p>
+<pre style="margin-left: 2em">
 UBUNTU_KERNEL_TAG=Ubuntu-3.13.0-32.57
 # Modify the line above with your Ubuntu kernel tag. First, determine your full kernel
 # version by reading /proc/version_signature; then, look up the Ubuntu kernel tag at:
@@ -76,7 +78,7 @@ sudo depmod
 cd ..
 </pre>
 
-<p><em>Tip:</em> If the message "<tt>Can't read private key</tt>" appears, it indicates the module could not be signed. This will not cause a problem unless the kernel enforces module signature verification.</p>
+<p style="margin-left: 2em"><strong>Tip:</strong> If the message "<tt>Can't read private key</tt>" appears, then the module could not be signed. This will not cause a problem unless the kernel enforces module signature verification.</p>
 
 <!--- ********************************************************************* -->
 <H3>3. Install the Modified Firmware</H3>
@@ -115,9 +117,9 @@ make -C linux-80211n-csitool-supplementary/netlink
 sudo modprobe -r iwlwifi mac80211
 </pre>
 
-<p><em>Tip:</em> On distributions other than Ubuntu, you may see the message "<tt>FATAL: Module iwlwifi is in use.</tt>" when you try to unload the driver. If this occurs, use the following command instead:</p>
+<p style="margin-left: 2em"><em>Tip:</em> The message "<tt>FATAL: Module iwlwifi is in use.</tt>" may appear if the <tt>iwldvm</tt> module needs to be explicitly unloaded first (on distributions other than Ubuntu). If so, use this instead:</p>
 
-<pre>
+<pre style="margin-left: 2em">
 sudo modprobe -r iwldvm iwlwifi mac80211
 </pre>
 
@@ -127,14 +129,14 @@ sudo modprobe -r iwldvm iwlwifi mac80211
 sudo modprobe iwlwifi connector_log=0x1
 </pre>
 
-<p>Connect to an 802.11n access point&mdash;using <em>iw</em> and <em>iproute2</em>, for example (or <em>NetworkManager</em>). Alternatively, let your system operate as an 802.11n access point by installing and configuring <em>hostapd</em> (sample configurations are in the supplementary material), then connect a station to it.</p>
+<p>Connect to an 802.11n access point, by using (for example) the <em>iw</em> and <em>iproute2</em> utilities (or if <em>NetworkManager</em> is enabled for the wireless interface, using <em>nm-cli</em> or the graphical applet). Alternatively, you can let your system function as an 802.11n access point by installing and configuring <em>hostapd</em> (see the supplementary material for configuration examples); in this case, start <em>hostapd</em> on this system and then connect another 802.11n station to it.</p>
 
-<p>Once you are connected, begin logging CSI to a file:</p>
+<p>Either way, once you are connected, begin logging CSI to a file:</p>
 <pre>
 sudo linux-80211n-csitool-supplementary/netlink/log_to_file csi.dat
 </pre>
 
-<p>At a different terminal, run the <em>ping</em> command with the IP address of the access point (or the connected station). If replies are sent back at High Throughput (802.11n) bitrates, <em>log_to_file</em> will write the CSI for each received packet to the file, and also print a message to the terminal. Note that depending on the rate selection algorithm, the first few packets are typically sent at Legacy (802.11a/b/g) bitrates instead of High Throughput bitrates; these will not provide CSI.</p>
+<p>At a different terminal, run the <em>ping</em> command with the IP address of the connected access point (or connected station). If replies are sent back at High Throughput (802.11n) bitrates, <em>log_to_file</em> will write the CSI for each received packet to the file, and also print a message to the terminal. Note that depending on the rate selection algorithm, the first few packets are typically sent at Legacy (802.11a/b/g) bitrates instead of High Throughput bitrates; these will not provide CSI.</p>
 
 <p>Make sure to see the <a href="faq.html">FAQ</a> for more details about collecting CSI.</p>
 
